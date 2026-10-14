@@ -1,0 +1,6 @@
+{
+  "remote": "",
+  "branch": "main",
+  "messagePrefix": "科普内容更新",
+  "_说明": "remote 填 GitHub 仓库地址（如 https://github.com/用户名/仓库名.git）；留空时发布只在本机提交，不推送。branch 默认 main。"
+}

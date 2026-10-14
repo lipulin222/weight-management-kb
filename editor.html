@@ -1,0 +1,292 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>科普内容 · 编辑与预览</title>
+<style>
+  :root{
+    --zz-blue-1:#006F8A; --zz-blue-2:#00809E; --zz-blue-3:#009BBF;
+    --zz-pale:#D9EEF2; --bg:#F6F6F6; --line:#E7E6E4; --ink:#595757; --ink-2:#7B7978;
+    --font:"ZZ-ZhunYuan","PingFang SC","Microsoft YaHei",sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font:14px/1.7 var(--font);color:var(--ink);background:#E9EBEF;height:100vh;display:flex;flex-direction:column;overflow:hidden}
+  header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  header h1{font-size:15px;font-weight:700;color:var(--zz-blue-1);margin-right:6px}
+  select,input[type=text]{font:13px var(--font);padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  button{font:13px var(--font);padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
+  button:hover{border-color:var(--zz-blue-3);color:var(--zz-blue-1)}
+  button.primary{background:var(--zz-blue-1);color:#fff;border-color:var(--zz-blue-1)}
+  button.primary:hover{background:var(--zz-blue-2);color:#fff}
+  button:disabled{opacity:.5;cursor:default}
+  .spacer{flex:1}
+  .dot{width:8px;height:8px;border-radius:50%;background:#E0A33A;display:none}
+  .dot.on{display:block}
+  main{flex:1;display:flex;min-height:0}
+  .pane{min-width:0;display:flex;flex-direction:column}
+  .pane--pv{flex:0 0 46%;border-right:1px solid var(--line);background:#E9EBEF;align-items:center;overflow:auto}
+  .pane--md{flex:1;background:#fff}
+  .pane__hd{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12px;color:var(--ink-2);background:#fff}
+  .pane--pv .pane__hd{width:100%;background:transparent;border-bottom:0}
+  #pvFrame{border:0;width:420px;height:100%;min-height:660px;background:#fff;border-radius:24px;box-shadow:0 8px 24px rgba(0,111,138,.12);margin:0 auto 20px}
+  #md{flex:1;width:100%;border:0;padding:16px;font:13px/1.9 var(--font);color:var(--ink);resize:none;outline:none}
+  #msg{padding:8px 16px;font-size:12.5px;background:#fff;border-top:1px solid var(--line);color:var(--ink-2);white-space:pre-wrap;max-height:120px;overflow:auto}
+  #msg.ok{color:#1B7A5A} #msg.err{color:#B03A2E}
+  .tag{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--zz-pale);color:var(--zz-blue-1);font-weight:700}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>科普内容 · 编辑与预览</h1>
+  <span class="tag">一页一稿</span>
+  <select id="artSel" title="选择要编辑/预览的页"></select>
+  <span class="dot" id="dirtyDot" title="有未保存的改动"></span>
+  <span class="spacer"></span>
+  <input type="text" id="cmtMsg" size="28" placeholder="发布说明（可留空）" value="医学编辑定稿">
+  <button id="btnSave">保存本页</button>
+  <button id="btnSaveAll">保存全部</button>
+  <button id="btnPub" class="primary">定稿并发布到 GitHub</button>
+</header>
+
+<main>
+  <section class="pane pane--pv">
+    <div class="pane__hd">预览（手机上就是这样）· 改右边文字，这里实时更新</div>
+    <iframe id="pvFrame" title="页面预览"></iframe>
+  </section>
+  <section class="pane pane--md">
+    <div class="pane__hd">文案稿（Markdown · 只改字，改完点「保存本页」或「定稿并发布」）</div>
+    <textarea id="md" spellcheck="false"></textarea>
+  </section>
+</main>
+
+<div id="msg">就绪。</div>
+
+<script>
+/* ===================== 页目表（12 页，md 与 html 一一对应） ===================== */
+const ARTICLES = [
+  { id:'W01', md:'文案稿/W01-用药第一周身体会有哪些反应.md',       html:'01-用药早期/W01-用药第一周身体会有哪些反应.html' },
+  { id:'W02', md:'文案稿/W02-用药后的反应怎么应对.md',             html:'01-用药早期/W02-用药后的反应怎么应对.html' },
+  { id:'W03', md:'文案稿/W03-没明显反应怎么判断药有没有起效.md',     html:'01-用药早期/W03-没明显反应怎么判断药有没有起效.html' },
+  { id:'W04', md:'文案稿/W04-吃得少了怎么保证营养.md',             html:'01-用药早期/W04-吃得少了怎么保证营养.html' },
+  { id:'W05', md:'文案稿/W05-体重多久称一次怎么记.md',             html:'01-用药早期/W05-体重多久称一次怎么记.html' },
+  { id:'W06', md:'文案稿/W06-减重期间喝酒怎么处理.md',             html:'01-用药早期/W06-减重期间喝酒怎么处理.html' },
+  { id:'M01', md:'文案稿/M01-剂量是怎么一步步调的.md',             html:'02-用药中期/M01-剂量是怎么一步步调的.html' },
+  { id:'M02', md:'文案稿/M02-平台期怎么判断.md',                   html:'02-用药中期/M02-平台期怎么判断.html' },
+  { id:'M03', md:'文案稿/M03-掉得太快怎么处理.md',                 html:'02-用药中期/M03-掉得太快怎么处理.html' },
+  { id:'M04', md:'文案稿/M04-减重期间的面部与皮肤变化.md',           html:'02-用药中期/M04-减重期间的面部与皮肤变化.html' },
+  { id:'M05', md:'文案稿/M05-掉头发怎么处理.md',                   html:'02-用药中期/M05-掉头发怎么处理.html' },
+  { id:'M06', md:'文案稿/M06-情绪低落想吃东西怎么处理.md',           html:'02-用药中期/M06-情绪低落想吃东西怎么处理.html' }
+];
+
+/* 离线版会在这里注入内联数据；服务版留空，运行时从服务取 */
+const DOCS = { /*__DOCS__*/ };
+const HEAD = ''; /*__HEAD__*/
+const FIGS = { /*__FIGS__*/ };
+
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const bold = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+const OFFLINE = Object.keys(DOCS).length > 0;
+
+let DIRTY = {};        // id -> true
+let CUR = ARTICLES[0].id;
+
+/* ===================== 单页 md → 页面 HTML ===================== */
+function parsePage(md) {
+  const out = { id:'', title:'', lead:'', rev:'', secs:[] };
+  let cur = null;
+  const figBox = { n:null, note:'' };
+  for (const raw of md.split(/\r?\n/)) {
+    const l = raw.trim();
+    let m;
+    if ((m = l.match(/^#\s+([WMS]\d\d)\s*·\s*(.+)$/))) { out.id = m[1]; out.title = m[2].trim(); continue; }
+    if (/^>\s*导语：/.test(l)) { out.lead = l.replace(/^>\s*导语：/,'').trim(); continue; }
+    if (/^>/.test(l)) { out.rev = l.replace(/^>\s*/,'').trim(); continue; }
+    if ((m = l.match(/^##\s*配图\s*[（(]第\s*(\d+)\s*节[）)]/))) { figBox.n = m[1]; continue; }
+    if (/^##\s*配图/.test(l)) { figBox.n = '0'; continue; }
+    if ((m = l.match(/^##\s+(\d+)\s+(.+)$/))) { cur = { n:m[1], t:m[2].trim(), items:[] }; out.secs.push(cur); continue; }
+    if (/^- 图注：/.test(l)) { figBox.note = l.replace(/^- 图注：/,'').trim(); continue; }
+    if (/^- 画什么：/.test(l)) { continue; }
+    if (/^- /.test(l) && cur) {
+      const txt = l.replace(/^- /,'').trim();
+      const it = txt.match(/^\*\*(.+?)\*\*\s+—\s+(.+)$/);
+      cur.items.push(it ? { kind:'item', nm:it[1], ds:it[2] } : { kind:'li', txt });
+    }
+  }
+  if (figBox.note && out.secs.length) {
+    const host = out.secs.find(s => s.n === figBox.n) || out.secs[out.secs.length - 1];
+    host.fig = figBox.note;
+  }
+  return out;
+}
+
+function articleHtml(page, id) {
+  const secHtml = page.secs.map(s => {
+    let inner = '';
+    const lis = s.items.filter(i => i.kind === 'li');
+    const its = s.items.filter(i => i.kind === 'item');
+    if (lis.length) inner += '\n        <ul class="ck">' + lis.map(i => '\n          <li>' + bold(i.txt) + '</li>').join('') + '\n        </ul>';
+    if (its.length) inner += its.map(i => '\n        <div class="item"><div class="nm">' + esc(i.nm) + '</div><div class="ds">' + esc(i.ds) + '</div></div>').join('');
+    if (s.fig) {
+      const svg = FIGS[id];
+      inner += '\n        <figure class="fig">\n          <span class="fig__tag">示意图</span>\n' +
+        (svg ? '          ' + svg + '\n' : '          <span class="fig__area" aria-hidden="true"></span>\n') +
+        '          <figcaption class="fig__cap">' + esc(s.fig) + '</figcaption>\n        </figure>';
+    }
+    return '      <div class="card">\n        <div class="sec-h"><span class="sec-n">' + s.n + '</span><span class="sec-t">' + esc(s.t) + '</span></div>' + inner + '\n      </div>';
+  }).join('\n\n');
+
+  return '<div class="shell">\n  <div class="phone">\n    <header class="topbar">\n' +
+    '      <button class="topbar__back" type="button" onclick="history.back()" aria-label="返回">\n' +
+    '        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>\n' +
+    '      </button>\n      <div class="topbar__title">科学减重</div>\n      <span class="topbar__spacer"></span>\n    </header>\n' +
+    '    <main class="page">\n      <header class="art-hd">\n        <span class="art-hd__k">科学减重服务</span>\n' +
+    '        <h1 class="art-hd__t">' + esc(page.title) + '</h1>\n' +
+    (page.lead ? '        <p class="art-hd__lead">' + esc(page.lead) + '</p>\n' : '') +
+    '      </header>\n\n' + secHtml + '\n\n' +
+    '      <div class="card info">\n        <div class="ar__rv"><span class="ar__rv-i">审核</span>' + esc(page.rev) + '</div>\n' +
+    '        <p class="disclaim">本篇内容仅供参考，具体情况以你的处方、药品说明书和医生指导为准。</p>\n      </div>\n\n' +
+    '      <div class="askbar">\n        <button class="btn" type="button">问 AI 减重助理</button>\n      </div>\n' +
+    '    </main>\n  </div>\n</div>';
+}
+function pageHtml(page, id) {
+  return '<!DOCTYPE html>\n<html lang="zh-CN">\n<head>\n<meta charset="utf-8">\n' +
+    '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' +
+    '<title>' + esc(page.title) + '</title>\n<link rel="icon" href="../assets/branding-pic/icon.png">\n' +
+    '<style>\n' + HEAD + '\n</style>\n</head>\n<body>\n' + articleHtml(page, id) + '\n</body>\n</html>';
+}
+
+/* ===================== 预览 ===================== */
+function render() {
+  const id = CUR;
+  const md = $('#md').value;
+  if (!md.trim()) { $('#pvFrame').srcdoc = '<p style="padding:20px">没有内容</p>'; return; }
+  $('#pvFrame').srcdoc = pageHtml(parsePage(md), id);
+}
+function markDirty(on) {
+  DIRTY[CUR] = on;
+  $('#dirtyDot').className = 'dot' + (Object.keys(DIRTY).some(k => DIRTY[k]) ? ' on' : '');
+}
+function say(t, cls) { const m = $('#msg'); m.textContent = t; m.className = cls || ''; }
+
+/* ===================== 载入 ===================== */
+async function loadHead() {
+  if (HEAD) return;
+  const t = await fetch('00-规范/科普内容页模板.html').then(r => r.text());
+  const s = t.indexOf('<style>'), e = t.indexOf('</style>');
+  HEAD = (s >= 0 && e > s) ? t.slice(s + 7, e) : '';
+}
+async function loadDocs() {
+  if (OFFLINE) return;
+  for (const a of ARTICLES) {
+    DOCS[a.id] = await fetch('api/md?file=' + encodeURIComponent(a.md)).then(r => r.text());
+  }
+}
+async function loadFigs() {
+  if (OFFLINE) return;
+  for (const a of ARTICLES) {
+    try {
+      const t = await fetch(a.html).then(r => r.text());
+      const m = t.match(/<figure class="fig">[\s\S]*?(<svg[\s\S]*?<\/svg>)/);
+      if (m) FIGS[a.id] = m[1].replace(/\s+/g, ' ').trim();
+    } catch (e) {}
+  }
+}
+function fillSelect() {
+  $('#artSel').innerHTML = ARTICLES.map(a => {
+    const t = (DOCS[a.id] || '').match(/^#\s+[WMS]\d\d\s*·\s*(.+)$/m);
+    return '<option value="' + a.id + '">' + a.id + ' · ' + (t ? t[1].trim() : '') + '</option>';
+  }).join('');
+}
+function show(id) {
+  CUR = id;
+  $('#artSel').value = id;
+  $('#md').value = DOCS[id] || '';
+  render();
+}
+
+/* ===================== 保存 / 发布 ===================== */
+async function saveOne(a) {
+  const r = await fetch('api/md?file=' + encodeURIComponent(a.md), { method:'POST', body: DOCS[a.id] });
+  const j = await r.json();
+  if (!j.ok) throw new Error('保存失败：' + a.md);
+  delete DIRTY[a.id];
+  markDirty(false);
+}
+async function regenOne(a) {
+  const r = await fetch('api/page?file=' + encodeURIComponent(a.html), { method:'POST', body: pageHtml(parsePage(DOCS[a.id]), a.id) });
+  const j = await r.json();
+  if (!j.ok) throw new Error('回灌失败：' + a.html);
+}
+
+$('#md').addEventListener('input', () => {
+  DOCS[CUR] = $('#md').value;
+  markDirty(true);
+  clearTimeout(window.__t); window.__t = setTimeout(render, 250);
+});
+$('#artSel').addEventListener('change', () => { show($('#artSel').value); });
+
+$('#btnSave').addEventListener('click', async () => {
+  const b = $('#btnSave'); b.disabled = true; say('保存中…');
+  try { const a = ARTICLES.find(x => x.id === CUR); await saveOne(a); say('已保存：' + a.md, 'ok'); }
+  catch (e) { say(e.message, 'err'); }
+  b.disabled = false;
+});
+
+$('#btnSaveAll').addEventListener('click', async () => {
+  const b = $('#btnSaveAll'); b.disabled = true; say('保存全部…');
+  try {
+    for (const a of ARTICLES) await saveOne(a);
+    say('12 篇文案稿已保存。', 'ok');
+  } catch (e) { say(e.message, 'err'); }
+  b.disabled = false;
+});
+
+$('#btnPub').addEventListener('click', async () => {
+  const b = $('#btnPub');
+  if (OFFLINE) {
+    const a = ARTICLES.find(x => x.id === CUR);
+    const name = a.md.split('/').pop();
+    const blob = new Blob([$('#md').value], { type:'text/markdown;charset=utf-8' });
+    const el = document.createElement('a');
+    el.href = URL.createObjectURL(blob); el.download = name;
+    document.body.appendChild(el); el.click();
+    setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
+    say('离线版：已导出 ' + name + '，请发回给产品侧回灌并发布到 GitHub。', 'ok');
+    return;
+  }
+  if (!confirm('定稿：保存 12 篇文案 → 回灌 12 个页面 → 提交并推送到 GitHub？')) return;
+  b.disabled = true;
+  try {
+    say('1/3 保存文案稿…');
+    for (const a of ARTICLES) await saveOne(a);
+
+    say('2/3 回灌页面…');
+    const done = [];
+    for (const a of ARTICLES) { await regenOne(a); done.push(a.id); }
+
+    say('3/3 提交到 GitHub…（已回灌 ' + done.join(' ') + '）');
+    const r = await fetch('api/publish', { method:'POST', body: JSON.stringify({ msg: $('#cmtMsg').value || '医学编辑定稿' }) });
+    const j = await r.json();
+    say(j.ok ? ('发布完成：\n' + (j.log || '')) : ('发布失败：\n' + (j.log || j.error || '')), j.ok ? 'ok' : 'err');
+  } catch (e) { say('发布失败：' + e.message, 'err'); }
+  b.disabled = false;
+});
+
+(async function init() {
+  try {
+    await loadHead();
+    await loadDocs();
+    await loadFigs();
+    fillSelect();
+    show(ARTICLES[0].id);
+    if (OFFLINE) { say('离线版就绪：改完点「定稿并发布」导出本页 md，发回给产品侧回灌发布。'); return; }
+    const st = await fetch('api/status').then(r => r.json()).catch(() => null);
+    if (st) say('就绪 · 12 页一页一稿 · Git：' + (st.repo || '未初始化') + (st.branch ? ' · ' + st.branch : '') + (st.remote ? ' · ' + st.remote : ' · 未配置远端'));
+  } catch (e) { say('初始化失败：' + e.message + '（请用 start-editor.bat 打开，不要直接双击本文件）', 'err'); }
+})();
+</script>
+</body>
+</html>
