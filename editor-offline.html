@@ -15,6 +15,9 @@
   header{display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fff;border-bottom:1px solid var(--line);flex-wrap:wrap}
   header h1{font-size:15px;font-weight:700;color:var(--zz-blue-1);margin-right:6px}
   select,input[type=text]{font:13px var(--font);padding:6px 8px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+  .back{font-size:13px;color:var(--zz-blue-1);text-decoration:none;padding:6px 10px;border-radius:8px;
+    border:1px solid rgba(0,111,138,.25);background:#fff}
+  .back:hover{background:var(--zz-pale)}
   button{font:13px var(--font);padding:7px 14px;border-radius:8px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer}
   button:hover{border-color:var(--zz-blue-3);color:var(--zz-blue-1)}
   button.primary{background:var(--zz-blue-1);color:#fff;border-color:var(--zz-blue-1)}
@@ -40,6 +43,7 @@
 
 <header>
   <h1>科普内容 · 编辑与预览</h1>
+  <a class="back" href="index.html">← 内容索引</a>
   <span class="tag">一页一稿</span>
   <select id="artSel" title="选择要编辑/预览的页"></select>
   <span class="dot" id="dirtyDot" title="有未保存的改动"></span>
@@ -282,7 +286,10 @@ $('#btnPub').addEventListener('click', async () => {
     await loadDocs();
     await loadFigs();
     fillSelect();
-    show(ARTICLES[0].id);
+    // 支持 index.html 直接跳到某一篇：editor.html?id=S04
+    const want = new URLSearchParams(location.search).get('id');
+    const hit = want && ARTICLES.some(a => a.id === want) ? want : ARTICLES[0].id;
+    show(hit);
     if (OFFLINE) { say('离线版就绪：改完点「定稿并发布」导出本页 md，发回给产品侧回灌发布。'); return; }
     const st = await fetch('api/status').then(r => r.json()).catch(() => null);
     if (st) say('就绪 · 12 页一页一稿 · Git：' + (st.repo || '未初始化') + (st.branch ? ' · ' + st.branch : '') + (st.remote ? ' · ' + st.remote : ' · 未配置远端'));

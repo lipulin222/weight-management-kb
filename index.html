@@ -2,459 +2,277 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>减重服务 · 科普内容全量清单</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>科普内容 · 全量清单（编辑用）</title>
 <link rel="icon" href="assets/branding-pic/icon.png">
 <style>
-/* ==========================================================================
-   科学减重 · 科普内容页 / 视觉规范：与 online-health-care/online-service.html、
-   patient-education 同源（卓正 VI 2025.01 + 420px 手机外壳 + 卡片体系）
-   ========================================================================== */
 @font-face{font-family:"ZZ-ZhunYuan";src:url("assets/branding-pic/fonts/方正准圆_GBK.woff2") format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"ZZ-ZhunYuan";src:url("assets/branding-pic/fonts/方正粗圆_GBK.woff2") format("woff2"),url("assets/branding-pic/fonts/方正粗圆_GBK.woff") format("woff");font-weight:700;font-display:swap}
 @font-face{font-family:"ZZ-Myriad";src:url("assets/branding-pic/fonts/MyriadPro-Regular.otf") format("opentype");font-weight:400;font-display:swap}
 @font-face{font-family:"ZZ-Myriad";src:url("assets/branding-pic/fonts/MyriadPro-Bold.otf") format("opentype");font-weight:700;font-display:swap}
 
 :root{
-  --zz-blue-1:#006F8A; --zz-blue-2:#00809E; --zz-blue-3:#009BBF; --zz-cyan:#00BED6;
-  --zz-pale:#D9EEF2; --zz-pale-2:#C7E6EE; --zz-bg:#F6F6F6; --zz-text:#595757; --zz-yellow:#FFEE6F;
-
-  --bg:var(--zz-bg); --card:#FFFFFF; --ink:var(--zz-text); --ink-2:#7B7978; --ink-3:#A6A4A3;
-  --line:#EBEBEB; --line-soft:#F2F2F2; --line-g:rgba(0,111,138,.18); --hover:#F2FAFC;
-  --accent:var(--zz-blue-1); --accent-soft:var(--zz-pale); --accent-deep:var(--zz-blue-1);
-
-  --radius:22px; --radius-sm:14px; --r-xs:12px;
-  --shadow:0 12px 40px rgba(0,111,138,.10); --shadow-sm:0 4px 16px rgba(0,111,138,.06);
-  --sp-1:12px; --sp-2:16px; --sp-3:20px;
-  --fs-1:11px; --fs-2:12.5px; --fs-3:14px; --fs-4:16px; --fs-5:19px; --fs-6:23px;
-  --ease:cubic-bezier(.2,.8,.2,1);
+  --zz-blue-1:#006F8A; --zz-blue-2:#00809E; --zz-blue-3:#009BBF;
+  --zz-pale:#D9EEF2; --bg:#EEF1F3; --card:#FFFFFF;
+  --ink:#595757; --ink-2:#7B7978; --ink-3:#A6A4A3;
+  --line:#E4E7EA; --line-soft:#F1F3F5;
   --font:"ZZ-Myriad","ZZ-ZhunYuan","PingFang SC","Microsoft YaHei",sans-serif;
 }
-
-*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-s{text-decoration:none}
+*{margin:0;padding:0;box-sizing:border-box}
 [hidden]{display:none !important}
-html,body{font-family:var(--font);color:var(--ink);background:#E9EBEF;line-height:1.7;
+html,body{font-family:var(--font);color:var(--ink);background:var(--bg);font-size:14px;line-height:1.7;
   -webkit-font-smoothing:antialiased}
-body{display:flex;justify-content:center;min-height:100vh}
+a{color:inherit}
 
-/* ---------- 手机外壳（与 portal 一致：420px · 桌面端圆角浮起） ---------- */
-.shell{display:flex;justify-content:center;width:100%}
-.phone{width:100%;max-width:420px;min-height:100vh;position:relative;display:flex;
-  flex-direction:column;overflow:hidden;background:var(--bg);box-shadow:0 0 60px rgba(0,111,138,.10)}
-@media (min-width:480px){.phone{margin:24px 0;min-height:calc(100vh - 48px);border-radius:32px}}
+.wrap{max-width:1220px;margin:0 auto;padding:0 24px 56px}
 
-/* ---------- 顶部导航（返回 / 居中标题） ---------- */
-.topbar{height:46px;display:flex;align-items:center;background:var(--bg);padding:0 6px;
-  flex-shrink:0;position:relative;z-index:5;padding-top:env(safe-area-inset-top)}
-.topbar__back{width:40px;height:40px;display:flex;align-items:center;justify-content:center;
-  border:none;background:none;cursor:pointer;color:var(--ink-2);border-radius:10px;flex-shrink:0}
-.topbar__back svg{width:22px;height:22px}
-.topbar__back:active{background:rgba(0,111,138,.08)}
-.topbar__spacer{width:40px;height:40px;flex-shrink:0}
-.topbar__title{flex:1;text-align:center;font-size:16.5px;font-weight:700;letter-spacing:.3px;color:var(--ink)}
+/* ---------- 头部 ---------- */
+.hd{padding:26px 0 18px}
+.hd__k{font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--zz-blue-3)}
+.hd__t{font-size:26px;font-weight:700;color:#33393B;letter-spacing:-.3px;line-height:1.35;margin-top:6px}
+.hd__d{font-size:13.5px;color:var(--ink-2);margin-top:6px}
+.hd__d b{font-weight:700;color:var(--zz-blue-1)}
 
-/* ---------- 版心 ---------- */
-.page{flex:1;padding:0 18px calc(28px + env(safe-area-inset-bottom))}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
-  box-shadow:var(--shadow-sm);padding:var(--sp-2)}
-.card + .card{margin-top:var(--sp-1)}
-
-/* ---------- 标题卡 ---------- */
-.ar__head{margin-top:var(--sp-1)}
-.ar__t{font-size:var(--fs-6);font-weight:700;line-height:1.42;color:var(--ink)}
-
-/* ---------- 节 ---------- */
-.sec-h{display:flex;align-items:baseline;gap:8px;margin-bottom:var(--sp-1)}
-.sec-n{font-family:"ZZ-Myriad",var(--font);font-size:var(--fs-1);font-weight:700;
-  color:var(--zz-blue-3);letter-spacing:.6px}
-.sec-t{font-size:var(--fs-4);font-weight:700;line-height:1.5;color:var(--zz-blue-3)}
-
-/* ---------- 清单条目 ---------- */
-.ck{list-style:none}
-.ck li{position:relative;padding-left:18px;font-size:var(--fs-3);color:var(--ink);
-  line-height:1.85;margin-bottom:7px}
-.ck li:last-child{margin-bottom:0}
-.ck li::before{content:"";position:absolute;left:2px;top:10px;width:5px;height:5px;
-  border-radius:50%;background:var(--zz-blue-3)}
-.ck li b{font-weight:700}
-
-/* ---------- 名称 + 说明 ---------- */
-.item + .item{margin-top:var(--sp-1)}
-.item .nm{font-size:var(--fs-3);font-weight:700;color:var(--ink)}
-.item .ds{font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
-
-/* ---------- 步骤 ---------- */
-.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
-.step:first-child{padding-top:0}
-.step:last-child{border-bottom:0;padding-bottom:0}
-.step .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
-  font-family:"ZZ-Myriad",var(--font);font-size:12px;font-weight:700;line-height:26px;text-align:center}
-.step .c{flex:1;min-width:0}
-.step .t{font-size:var(--fs-3);font-weight:700;color:var(--ink)}
-.step .d{font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
-.step .d em{font-style:normal;font-weight:700;color:var(--accent-deep)}
-
-/* ---------- 部位 / 并列项 ---------- */
-.zone{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
-.zone .dot{flex:0 0 5px;height:5px;border-radius:50%;background:var(--zz-blue-3);margin-top:11px}
-.zone .zc{flex:1;font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
-.zone .zc b{font-weight:700;color:var(--ink)}
-
-/* ---------- 浅蓝提示块 ---------- */
-.no{background:var(--accent-soft);border-radius:var(--r-xs);padding:var(--sp-1);
-  font-size:var(--fs-2);color:var(--accent-deep);line-height:1.8;margin-top:var(--sp-1)}
-.no b{font-weight:700}
-
-/* ---------- 插图 ---------- */
-.fig{margin-top:var(--sp-1);background:#FBFDFE;border:1px solid var(--line);
-  border-radius:var(--r-xs);padding:12px 12px 10px;text-align:center}
-.fig__tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;
-  color:var(--accent-deep);background:var(--accent-soft);border-radius:4px;padding:1px 6px;margin-bottom:8px}
-.fig img,.fig svg{display:block;width:100%;height:auto;max-height:250px;margin:0 auto}
-.fig__cap{font-size:var(--fs-1);color:var(--ink-3);line-height:1.65;margin-top:8px;text-align:left}
-
-/* ---------- 占位图（未出图时的过渡形态） ---------- */
-.ph{background:#FBFDFE;border:1.5px dashed #B9D3DA;border-radius:var(--r-xs);
-  padding:var(--sp-2);text-align:center;margin-top:var(--sp-1);color:var(--ink-3)}
-.ph .pht{font-size:var(--fs-2);font-weight:700;color:var(--ink-2)}
-.ph .pht .pn{color:var(--accent-deep)}
-.ph .phd{font-size:var(--fs-1);line-height:1.8;text-align:left;background:var(--card);
-  border-radius:8px;padding:8px 12px;margin-top:10px}
-.figure{background:#FBFDFE;border:1px solid var(--line);border-radius:var(--r-xs);
-  padding:12px;text-align:center;margin-top:var(--sp-1);position:relative}
-.figure .fb{position:absolute;top:10px;right:12px;font-size:10px;color:var(--ink-3);
-  border:1px dashed #B9D3DA;border-radius:4px;padding:1px 7px}
-.figure svg{max-width:100%;height:auto}
-.fig-cap{font-size:var(--fs-1);color:var(--ink-3);line-height:1.65;margin-top:8px}
-
-/* ---------- 吸底 AI 按钮 ---------- */
-.askbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;
-  max-width:420px;z-index:6;padding:10px 18px calc(10px + env(safe-area-inset-bottom));
-  background:rgba(246,246,246,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
-@media (min-width:480px){.askbar{bottom:24px;border-radius:0 0 32px 32px}}
-.page{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
-.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;cursor:pointer;
-  font-family:var(--font);color:#fff;border:none;border-radius:14px;padding:13px;
-  font-size:var(--fs-3);font-weight:700;letter-spacing:.3px;
-  background:linear-gradient(135deg,var(--zz-blue-3) 0%,var(--zz-blue-2) 55%,var(--zz-blue-1) 100%);
-  box-shadow:0 8px 20px rgba(0,111,138,.22);transition:transform .15s var(--ease),box-shadow .15s var(--ease)}
-.btn:active{transform:scale(.985);box-shadow:0 4px 10px rgba(0,111,138,.16)}
-
-/* ---------- 审核与说明卡（三件套） ---------- */
-.info{padding:var(--sp-2)}
-.ar__rv{display:flex;align-items:center;gap:8px;font-size:var(--fs-1);color:var(--accent-deep);
-  background:var(--accent-soft);border-radius:var(--r-xs);padding:8px var(--sp-1);line-height:1.6}
-.ar__rv-i{flex-shrink:0;background:var(--accent);color:#fff;border-radius:4px;
-  padding:2px 6px;font-size:10px;letter-spacing:.5px}
-.disclaim{font-size:var(--fs-1);color:var(--ink-3);line-height:1.8;margin-top:var(--sp-1)}
-
-/* ---------- 索引页 ---------- */
-.tip{background:var(--accent-soft);border-radius:var(--r-xs);padding:var(--sp-1);
-  font-size:var(--fs-2);color:var(--accent-deep);line-height:1.8}
-.tip + .tip{margin-top:var(--sp-1)}
-.tip b{font-weight:700}
-.lst{list-style:none}
-.lst li[hidden]{display:none !important}
-.lst li:not([hidden]) + li:not([hidden]){border-top:1px solid var(--line-soft)}
-.lst a{display:flex;align-items:baseline;gap:10px;padding:13px 0;min-height:48px;
-  text-decoration:none;color:var(--ink)}
-.lst .id{flex:0 0 32px;font-family:"ZZ-Myriad",var(--font);font-size:var(--fs-1);
-  font-weight:700;color:var(--zz-blue-3)}
-.lst .t{flex:1;min-width:0;font-size:var(--fs-3);line-height:1.5}
-@media (hover:hover){.lst a:hover .t{color:var(--accent-deep)}}
-@media (max-width:360px){.page{padding-left:14px;padding-right:14px}}
-
-/* ===== 版头 P4（定稿）：眉标 + 左对齐深墨标题，页面底色，无装饰 ===== */
-.topbar{background:var(--bg);position:relative;z-index:2}
-.topbar__back{width:36px;height:36px;border-radius:50%;
-  background:transparent;color:var(--ink-2)}
-.topbar__back svg{width:20px;height:20px}
-.topbar__back:active{background:var(--hover)}
-.topbar__spacer{width:36px;height:36px}
-.topbar__title{display:none}
-
-.art-hd{margin:0 -18px 0;padding:12px 18px 22px;background:var(--bg);
-  border-radius:0;border-bottom:1px solid #E7E6E4}
-.art-hd__k{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;
-  color:var(--zz-blue-3);margin-bottom:9px}
-.art-hd__t{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-.3px;
-  color:#33393B;padding-left:0;text-wrap:balance}
-.art-hd__lead{font-size:13px;color:var(--ink-2);line-height:1.75;margin-top:8px}
-/* 首张卡片与版头留出常规间距（不做重叠） */
-.page > .card:first-of-type{margin-top:var(--sp-1)}
-/* 入场：一次性错峰浮现，不散点动效 */
-@keyframes zzUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
-.page > .card,.page > .ar__ask{animation:zzUp .36s var(--ease) both}
-.page > .card:nth-of-type(2){animation-delay:.06s}
-.page > .card:nth-of-type(3){animation-delay:.12s}
-.page > .card:nth-of-type(4){animation-delay:.18s}
-.page > .card:nth-of-type(5){animation-delay:.24s}
-.page > .ar__ask{animation-delay:.30s}
-@media (prefers-reduced-motion:reduce){.page > .card,.page > .ar__ask{animation:none}}
-/* ===== v3.2 细节打磨 ===== */
-.card{border-color:#F0EFEE;box-shadow:0 4px 14px rgba(0,111,138,.055)}
-.sec-h{align-items:center;gap:9px;padding-bottom:10px;margin-bottom:12px;
-  border-bottom:1px solid var(--line-soft)}
-.sec-n{display:inline-flex;align-items:center;justify-content:center;
-  min-width:22px;height:18px;padding:0 5px;border-radius:6px;
-  background:var(--accent-soft);color:var(--zz-blue-1);font-size:10.5px;
-  letter-spacing:.4px}
-.sec-t{font-size:var(--fs-4);line-height:1.45}
-.ck li::before{width:5px;height:5px;border-radius:1px;top:9px;left:3px;
-  background:var(--zz-blue-3);transform:rotate(45deg)}
-.ck li{padding-left:19px}
-.item .nm{display:flex;align-items:center;gap:7px}
-.item .nm::before{content:"";flex:0 0 5px;height:5px;border-radius:1px;
-  background:var(--zz-blue-3);transform:rotate(45deg)}
-.item + .item{margin-top:14px;padding-top:14px;border-top:1px dashed #F0EFEE}
-.ar__ask{border-color:rgba(0,111,138,.14)}
-.info .disclaim{border-top:1px solid var(--line-soft);padding-top:10px;margin-top:12px}
-/* ---------- 配图容器：图位 + 示意标注 + 图注 ---------- */
-.fig__area{display:block;width:100%;aspect-ratio:16 / 9;background:#F7FBFD;
-  border:1px dashed #CFE0E6;border-radius:8px}
-.fig img,.fig svg{max-height:240px}
-
-@media (max-width:360px){
-  .art-hd__t{font-size:21px}
-}
-
-/* ==========================================================================
-   全量清单 · v5：状态筛选 / 搜索 / 状态徽标
-   状态只用三档：未开始 todo · 初稿 draft · 已审核 done
-   ========================================================================== */
-.grp[hidden]{display:none !important}
+/* ---------- 工具条 ---------- */
+.tools{position:sticky;top:0;z-index:6;background:rgba(238,241,243,.94);backdrop-filter:blur(8px);
+  padding:12px 0 10px;border-bottom:1px solid var(--line)}
+.tools__in{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{position:relative;display:inline-flex}
 .chip input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
-.chip i{display:inline-flex;align-items:baseline;gap:5px;padding:8px 12px;min-height:36px;
-  border-radius:999px;border:1px solid var(--line);background:#fff;font-style:normal;
-  font-size:12.5px;color:var(--ink-2);line-height:1.4;transition:.15s var(--ease)}
+.chip i{display:inline-flex;align-items:baseline;gap:5px;padding:7px 12px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;font-style:normal;font-size:12.5px;color:var(--ink-2)}
 .chip .n{font-family:"ZZ-Myriad",var(--font);font-weight:700;font-size:12px;color:var(--zz-blue-1)}
 .chip input:checked + i{border-color:transparent;background:var(--zz-blue-1);color:#fff}
 .chip input:checked + i .n{color:#fff}
-.qbox{margin-top:12px;position:relative}
-.q{width:100%;border:1px solid var(--line);border-radius:var(--r-xs);padding:11px 12px;
-  font-family:var(--font);font-size:var(--fs-3);color:var(--ink);background:#FCFDFD;outline:none}
+.q{flex:1;min-width:220px;max-width:340px;border:1px solid var(--line);border-radius:10px;
+  padding:9px 12px;font-family:var(--font);font-size:13.5px;color:var(--ink);background:#fff;outline:none}
 .q:focus{border-color:var(--zz-blue-3)}
-.row{display:flex;align-items:baseline;gap:10px;padding:12px 0;min-height:48px;text-decoration:none;color:var(--ink)}
-.row .id{flex:0 0 30px;font-family:"ZZ-Myriad",var(--font);font-size:11px;font-weight:700;color:var(--zz-blue-3)}
-.row .t{flex:1;min-width:0;font-size:14px;line-height:1.55}
-.row .nt{display:block;font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:3px}
-.row--off .t{color:var(--ink-2)}
-.bd{flex:0 0 auto;align-self:center;font-size:11px;font-weight:700;line-height:1;
-  padding:5px 8px;border-radius:6px;white-space:nowrap;letter-spacing:.3px}
+.hint{font-size:12px;color:var(--ink-3)}
+
+/* ---------- 分组与行 ---------- */
+.grp{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.grp__h{display:flex;align-items:center;gap:10px;padding:11px 16px;background:#F7F9FA;border-bottom:1px solid var(--line)}
+.ghn{font-size:13px;font-weight:700;color:var(--zz-blue-1);letter-spacing:.3px}
+.ghc{font-size:11.5px;color:var(--ink-3)}
+.gr{display:block}
+.row{display:grid;grid-template-columns:76px 100px minmax(280px,1.25fr) minmax(220px,1fr) 208px;
+  align-items:center;gap:14px;padding:11px 16px;border-top:1px solid var(--line-soft)}
+.row:first-child{border-top:0}
+.row:hover{background:#F8FBFB}
+.cid{font-family:"ZZ-Myriad",var(--font);font-size:12px;font-weight:700;color:var(--zz-blue-3);letter-spacing:.6px}
+.bd{display:inline-block;font-size:11px;font-weight:700;line-height:1;padding:5px 8px;border-radius:6px;white-space:nowrap}
 .bd--todo{background:#F2F1F0;color:#A6A4A3}
 .bd--draft{background:var(--zz-pale);color:var(--zz-blue-1)}
 .bd--done{background:var(--zz-blue-1);color:#fff}
-.empty{font-size:13px;color:var(--ink-3);text-align:center;padding:24px 0}
+.ct{font-size:14px;line-height:1.5;color:var(--ink)}
+.ct .nt{display:block;font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:2px}
+.cn{font-size:12.5px;color:var(--ink-2);line-height:1.6}
+.act{display:flex;gap:8px;justify-content:flex-end}
+.btn-s{font-size:12.5px;text-decoration:none;padding:6px 11px;border-radius:8px;
+  border:1px solid var(--line);color:var(--ink-2);background:#fff;white-space:nowrap;min-height:32px;
+  display:inline-flex;align-items:center}
+.btn-s:hover{border-color:var(--zz-blue-3);color:var(--zz-blue-1)}
+.btn-s--main{border-color:transparent;background:var(--zz-blue-1);color:#fff}
+.btn-s--main:hover{background:var(--zz-blue-2);color:#fff}
+.off{font-size:12.5px;color:var(--ink-3);padding:6px 0}
+
+/* ---------- 说明卡 ---------- */
+.notes{margin-top:18px;display:grid;grid-template-columns:1.4fr 1fr;gap:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+.card h2{font-size:13px;font-weight:700;color:var(--zz-blue-1);letter-spacing:.3px;margin-bottom:10px}
+.ck{list-style:none}
+.ck li{position:relative;padding-left:16px;font-size:13px;color:var(--ink-2);line-height:1.8;margin-bottom:5px}
+.ck li:last-child{margin-bottom:0}
+.ck li::before{content:"";position:absolute;left:2px;top:11px;width:5px;height:5px;
+  border-radius:1px;background:var(--zz-blue-3);transform:rotate(45deg)}
+.ck li b{font-weight:700;color:var(--ink)}
+.state-line{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);margin-bottom:8px}
+.state-line:last-child{margin-bottom:0}
+.state-line .bd{flex:0 0 auto}
+.empty{padding:32px 0;text-align:center;color:var(--ink-3);font-size:13px}
+
+@media (max-width:960px){
+  .notes{grid-template-columns:1fr}
+  .row{grid-template-columns:64px 92px 1fr;row-gap:6px}
+  .cn{display:none}
+  .act{grid-column:1 / -1;justify-content:flex-start}
+}
 </style>
 </head>
 <body>
-<div class="shell">
-  <div class="phone">
-    <header class="topbar">
-      <button class="topbar__back" type="button" onclick="history.back()" aria-label="返回">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
-      <div class="topbar__title">减重科普</div>
-      <span class="topbar__spacer"></span>
-    </header>
+<div class="wrap">
 
-    <main class="page">
-      <header class="art-hd">
-        <span class="art-hd__k">科学减重服务</span>
-        <h1 class="art-hd__t">科普内容全量清单</h1>
-        <p class="art-hd__lead">40 个选题一条不落，写完的能直接点开。</p>
-      </header>
+  <header class="hd">
+    <div class="hd__k">科学减重服务 · 编辑工作台</div>
+    <h1 class="hd__t">科普内容 · 全量清单</h1>
+    <p class="hd__d">40 个选题一条不落。点某一条的 <b>改稿</b>，直接进左右对比页改这篇。</p>
+  </header>
 
-      <!-- ============ 状态与筛选 ============ -->
-      <div class="card">
-        <div class="chips">
-          <label class="chip"><input type="radio" name="st" value="all" checked><i>全部 <span class="n">40</span></i></label>
-          <label class="chip"><input type="radio" name="st" value="todo"><i>未开始 <span class="n">25</span></i></label>
-          <label class="chip"><input type="radio" name="st" value="draft"><i>初稿 <span class="n">15</span></i></label>
-          <label class="chip"><input type="radio" name="st" value="done"><i>已审核 <span class="n">0</span></i></label>
-        </div>
-        <div class="qbox">
-          <input class="q" id="q" type="search" placeholder="搜编号或标题，比如 W01、脱发" aria-label="搜索条目">
-        </div>
+  <div class="tools">
+    <div class="tools__in">
+      <div class="chips">
+        <label class="chip"><input type="radio" name="st" value="all" checked><i>全部 <span class="n" id="nAll">40</span></i></label>
+        <label class="chip"><input type="radio" name="st" value="todo"><i>未开始 <span class="n" id="nTodo">25</span></i></label>
+        <label class="chip"><input type="radio" name="st" value="draft"><i>初稿 <span class="n" id="nDraft">15</span></i></label>
+        <label class="chip"><input type="radio" name="st" value="done"><i>已审核 <span class="n" id="nDone">0</span></i></label>
       </div>
-
-      <!-- ============ 环节 1 · 购前 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 1</span><span class="sec-t">购前</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">K01</span><span class="t">GLP-1 是怎么帮你减重的<em class="nt">旧稿在 demo ARTICLES，待按新判据迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K02</span><span class="t">什么样的人适合医疗级减重<em class="nt">旧稿在 demo ARTICLES，待迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K03</span><span class="t">一个完整疗程是怎么进行的<em class="nt">旧稿在 demo ARTICLES，待迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K04</span><span class="t">效果怎么看，多久算有变化<em class="nt">旧稿待迁移；与 W05 相邻</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K05</span><span class="t">费用和包含项怎么看<em class="nt">需业务给真实口径，不写占位价</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K06</span><span class="t">它和节食、代餐、运动有什么不同<em class="nt">讲方式差异，不做药物对比</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">K07</span><span class="t">关于减重，最常被问的 10 个问题<em class="nt">购前 FAQ 聚合，每条跳对应长文</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 2 · 消费决策 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 2</span><span class="sec-t">消费决策</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">D01</span><span class="t">这份评估在测什么<em class="nt">每道题对应什么判断依据</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">D02</span><span class="t">为什么还要医生再看一遍<em class="nt">P0，合规必需；线上与到院是两件事</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">D03</span><span class="t">什么情况下需要到医院或做检查<em class="nt">判定标准 + 常见到院的几种情况</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">D04</span><span class="t">如果需要检查，怎么准备<em class="nt">查哪些、是否空腹、异地能否做、多久出结果</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">D05</span><span class="t">不适合用药的人，还能怎么减<em class="nt">P0，防流失；给替代路径</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">D06</span><span class="t">你的健康数据怎么被使用<em class="nt">授权范围、用途、可撤回</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 3 · 用药前 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 3</span><span class="sec-t">用药前</span></div>
-        <ul class="lst">
-          <li data-st="draft"><a class="row" href="00-样张/content-sample-S01.html"><span class="id">S01</span><span class="t">第一次注射怎么做<em class="nt">样张；P1 五步操作图、P2 部位图待设计出正式版</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="00-样张/content-sample-S02.html"><span class="id">S02</span><span class="t">药品怎么保存和签收<em class="nt">样张；P3 签收检查图待设计出正式版</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">S03</span><span class="t">漏打或晚打几天怎么办<em class="nt">旧稿待迁移；补打规则按药品说明书</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="draft"><a class="row" href="03-用药前/S04-哪些情况要马上联系医生.html"><span class="id">S04</span><span class="t">哪些情况要马上联系医生<em class="nt">各篇兜底动作都靠它承接；清单完整性须内分泌科确认</em></span><span class="bd bd--draft">初稿</span></a></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 4 · 用药早期 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 4</span><span class="sec-t">用药早期（1–4 周）</span></div>
-        <ul class="lst">
-          <li data-st="draft"><a class="row" href="01-用药早期/W01-用药第一周身体会有哪些反应.html"><span class="id">W01</span><span class="t">用药第一周，身体会有哪些反应<em class="nt">对齐旧稿 week1，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="01-用药早期/W02-用药后的反应怎么应对.html"><span class="id">W02</span><span class="t">用药后的反应怎么应对<em class="nt">反应清单已归 W01；样张版在 00-样张/content-sample-W02.html</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="01-用药早期/W03-没明显反应怎么判断药有没有起效.html"><span class="id">W03</span><span class="t">没明显反应，怎么判断药有没有起效<em class="nt">对齐旧稿 noreact，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="01-用药早期/W04-吃得少了怎么保证营养.html"><span class="id">W04</span><span class="t">吃得少了，怎么保证营养<em class="nt">配图：一餐的先后顺序</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="01-用药早期/W05-体重多久称一次怎么记.html"><span class="id">W05</span><span class="t">体重多久称一次、怎么记<em class="nt">配图：单日波动与周均值线</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="01-用药早期/W06-减重期间喝酒怎么处理.html"><span class="id">W06</span><span class="t">减重期间喝酒怎么处理<em class="nt">对齐旧稿 drink，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 5 · 用药中期 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 5</span><span class="sec-t">用药中期（5–12 周）</span></div>
-        <ul class="lst">
-          <li data-st="draft"><a class="row" href="02-用药中期/M01-剂量是怎么一步步调的.html"><span class="id">M01</span><span class="t">剂量是怎么一步步调的<em class="nt">P0，爬坡期必看；配图：剂量台阶</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="02-用药中期/M02-平台期怎么判断.html"><span class="id">M02</span><span class="t">平台期怎么判断<em class="nt">对齐旧稿 plateau；配图：平台段</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="02-用药中期/M03-掉得太快怎么处理.html"><span class="id">M03</span><span class="t">掉得太快怎么处理<em class="nt">承接 A1 提醒；速度阈值由医疗团队给</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="02-用药中期/M04-减重期间的面部与皮肤变化.html"><span class="id">M04</span><span class="t">减重期间的面部与皮肤变化<em class="nt">上线前需皮肤科确认</em></span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="02-用药中期/M05-掉头发怎么处理.html"><span class="id">M05</span><span class="t">掉头发怎么处理</span><span class="bd bd--draft">初稿</span></a></li>
-          <li data-st="draft"><a class="row" href="02-用药中期/M06-情绪低落想吃东西怎么处理.html"><span class="id">M06</span><span class="t">情绪低落、想吃东西怎么处理<em class="nt">建议加心理 / 精神科复审</em></span><span class="bd bd--draft">初稿</span></a></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 6 · 复查 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 6</span><span class="sec-t">复查与方案调整</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">R01</span><span class="t">复查都看哪些指标<em class="nt">旧稿待迁移；代谢指标重于体重</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">R02</span><span class="t">复查怎么准备（线上 / 到院两种）<em class="nt">线上交什么；到院的空腹、时长、带什么</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">R03</span><span class="t">复查之后方案可能有哪几种变化<em class="nt">维持 / 调整 / 需要面诊，不下承诺</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 7 · 续药 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 7</span><span class="sec-t">续药</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">F01</span><span class="t">续药流程和配送<em class="nt">触发时机、下单、冷链签收</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">F02</span><span class="t">断药或延迟几天怎么办<em class="nt">断药阈值必须由医生定，产品不拍板</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 8 · 停药与维持 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 8</span><span class="sec-t">停药与维持期</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">E01</span><span class="t">什么时候可以停药<em class="nt">旧稿待迁移；由医生按指标决定</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">E02</span><span class="t">停药之后怎么维持住<em class="nt">旧稿待迁移；停药不等于结束</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">E03</span><span class="t">停药后的随访节奏<em class="nt">多久复查一次、监测什么</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 9 · 跨科转诊 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 9</span><span class="sec-t">跨科转诊</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">T01</span><span class="t">面部评估能做什么<em class="nt">需皮肤科确认；不承诺效果</em></span><span class="bd bd--todo">未开始</span></span></li>
-          <li data-st="todo"><span class="row row--off"><span class="id">T02</span><span class="t">运动康复是做什么的<em class="nt">取决于有无运动康复科可承接</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <!-- ============ 环节 10 · 结营回顾 ============ -->
-      <div class="card grp">
-        <div class="sec-h"><span class="sec-n">环节 10</span><span class="sec-t">结营回顾</span></div>
-        <ul class="lst">
-          <li data-st="todo"><span class="row row--off"><span class="id">G01</span><span class="t">怎么看待这一段的变化<em class="nt">数据之外的变化；与 T7 回顾页同源</em></span><span class="bd bd--todo">未开始</span></span></li>
-        </ul>
-      </div>
-
-      <p class="empty" id="empty" hidden>没有符合条件的条目。</p>
-
-      <!-- ============ 说明卡 ============ -->
-      <div class="card info">
-        <div class="sec-h"><span class="sec-n">状态</span><span class="sec-t">三档口径</span></div>
-        <ul class="ck">
-          <li><b>未开始</b> — 还没动笔，或只有 demo 里的旧稿待迁移。</li>
-          <li><b>初稿</b> — 已有页面，可点开直接看；<b>还没过医疗审核与署名</b>。</li>
-          <li><b>已审核</b> — 已通过医疗审核并署名，可上线（当前 0 篇）。</li>
-        </ul>
-        <p class="disclaim">状态的口径两边同步：本页 index.html 与 00-索引-减重科普内容页清单.md。改一边要同步另一边。</p>
-      </div>
-
-      <div class="tip">
-        生产依据与判据在 <b>00-规范/</b>；样张在 <b>00-样张/</b>；文字正本在 <b>文案稿/</b>（一页一稿）。
-      </div>
-
-      <div class="tip">
-        <b>要改文案</b>：在线看这一版的同时，打开 <a href="editor-offline.html" style="color:var(--zz-blue-1);font-weight:700">editor-offline.html</a>——左边手机预览、右边改稿，改完导出本页 md 发回就行。
-      </div>
-    </main>
-
-    <!-- ============ 吸底问 AI ============ -->
-    <div class="askbar">
-      <button class="btn" type="button">问 AI 减重助理</button>
+      <input class="q" id="q" type="search" placeholder="搜编号或标题，比如 W01、脱发">
+      <span class="hint">改稿入口：<b>editor-offline.html</b>（在线可用）</span>
     </div>
   </div>
+
+  <div id="box"></div>
+
+  <p class="empty" id="empty" hidden>没有符合条件的条目。</p>
+
+  <div class="notes">
+    <div class="card">
+      <h2>改稿三步</h2>
+      <ul class="ck">
+        <li>在这张表上点某一行的<b>改稿</b> → 打开左右对比页，并自动定位到这一篇。</li>
+        <li>左边手机预览、右边这篇的 Markdown。<b>只改字</b>，`#` `##` `-` `**` `>` 这些符号别动。</li>
+        <li>在线版：点<b>定稿并发布</b>导出本页 md，发回产品侧；本机版（双击 `start-editor.bat` 打开 editor.html）能直接保存并回灌页面。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h2>状态口径</h2>
+      <div class="state-line"><span class="bd bd--todo">未开始</span><span>还没动笔，或只有 demo 旧稿待迁移</span></div>
+      <div class="state-line"><span class="bd bd--draft">初稿</span><span>已有页面可读，未过医疗审核与署名</span></div>
+      <div class="state-line"><span class="bd bd--done">已审核</span><span>已过审核并署名，可上线（当前 0 篇）</span></div>
+      <p class="hint" style="margin-top:10px">状态改动需同步这里的 GROUPS 与 <b>00-索引-减重科普内容页清单.md</b>。</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
-(function () {
-  var q = document.getElementById('q');
-  var empty = document.getElementById('empty');
-  var chips = document.querySelectorAll('.chip input');
-  var items = document.querySelectorAll('.lst li');
-  var groups = document.querySelectorAll('.grp');
+/* ===================== 全量数据（改状态/加篇目只动这里） ===================== */
+const GROUPS = [
+  { g:'环节 1 · 购前', items:[
+    { id:'K01', st:'todo', t:'GLP-1 是怎么帮你减重的', n:'旧稿在 demo ARTICLES，待按新判据迁移' },
+    { id:'K02', st:'todo', t:'什么样的人适合医疗级减重', n:'旧稿在 demo ARTICLES，待迁移' },
+    { id:'K03', st:'todo', t:'一个完整疗程是怎么进行的', n:'旧稿在 demo ARTICLES，待迁移' },
+    { id:'K04', st:'todo', t:'效果怎么看，多久算有变化', n:'旧稿待迁移；与 W05 相邻' },
+    { id:'K05', st:'todo', t:'费用和包含项怎么看', n:'需业务给真实口径，不写占位价' },
+    { id:'K06', st:'todo', t:'它和节食、代餐、运动有什么不同', n:'讲方式差异，不做药物对比' },
+    { id:'K07', st:'todo', t:'关于减重，最常被问的 10 个问题', n:'购前 FAQ 聚合，每条跳对应长文' }
+  ]},
+  { g:'环节 2 · 消费决策', items:[
+    { id:'D01', st:'todo', t:'这份评估在测什么', n:'每道题对应什么判断依据' },
+    { id:'D02', st:'todo', t:'为什么还要医生再看一遍', n:'P0，合规必需；线上与到院是两件事' },
+    { id:'D03', st:'todo', t:'什么情况下需要到医院或做检查', n:'判定标准 + 常见到院的几种情况' },
+    { id:'D04', st:'todo', t:'如果需要检查，怎么准备', n:'查哪些、是否空腹、异地能否做、多久出结果' },
+    { id:'D05', st:'todo', t:'不适合用药的人，还能怎么减', n:'P0，防流失；给替代路径' },
+    { id:'D06', st:'todo', t:'你的健康数据怎么被使用', n:'授权范围、用途、可撤回' }
+  ]},
+  { g:'环节 3 · 用药前', items:[
+    { id:'S01', st:'draft', t:'第一次注射怎么做', n:'样张；五步操作图与部位图待设计出正式版', f:'00-样张/content-sample-S01.html' },
+    { id:'S02', st:'draft', t:'药品怎么保存和签收', n:'样张；签收检查图待设计出正式版', f:'00-样张/content-sample-S02.html' },
+    { id:'S03', st:'todo', t:'漏打或晚打几天怎么办', n:'旧稿待迁移；补打规则按药品说明书' },
+    { id:'S04', st:'draft', t:'哪些情况要马上联系医生', n:'各篇兜底动作都靠它承接；清单完整性须内分泌科确认', f:'03-用药前/S04-哪些情况要马上联系医生.html' }
+  ]},
+  { g:'环节 4 · 用药早期（1–4 周）', items:[
+    { id:'W01', st:'draft', t:'用药第一周，身体会有哪些反应', n:'对齐旧稿 week1，已按新判据重写', f:'01-用药早期/W01-用药第一周身体会有哪些反应.html' },
+    { id:'W02', st:'draft', t:'用药后的反应怎么应对', n:'反应清单已归 W01；样张版在 00-样张/content-sample-W02.html', f:'01-用药早期/W02-用药后的反应怎么应对.html' },
+    { id:'W03', st:'draft', t:'没明显反应，怎么判断药有没有起效', n:'对齐旧稿 noreact，已按新判据重写', f:'01-用药早期/W03-没明显反应怎么判断药有没有起效.html' },
+    { id:'W04', st:'draft', t:'吃得少了，怎么保证营养', n:'配图：一餐的先后顺序', f:'01-用药早期/W04-吃得少了怎么保证营养.html' },
+    { id:'W05', st:'draft', t:'体重多久称一次、怎么记', n:'配图：单日波动与周均值线', f:'01-用药早期/W05-体重多久称一次怎么记.html' },
+    { id:'W06', st:'draft', t:'减重期间喝酒怎么处理', n:'对齐旧稿 drink，已按新判据重写', f:'01-用药早期/W06-减重期间喝酒怎么处理.html' }
+  ]},
+  { g:'环节 5 · 用药中期（5–12 周）', items:[
+    { id:'M01', st:'draft', t:'剂量是怎么一步步调的', n:'P0，爬坡期必看；配图：剂量台阶', f:'02-用药中期/M01-剂量是怎么一步步调的.html' },
+    { id:'M02', st:'draft', t:'平台期怎么判断', n:'对齐旧稿 plateau；配图：平台段', f:'02-用药中期/M02-平台期怎么判断.html' },
+    { id:'M03', st:'draft', t:'掉得太快怎么处理', n:'承接 A1 提醒；速度阈值由医疗团队给', f:'02-用药中期/M03-掉得太快怎么处理.html' },
+    { id:'M04', st:'draft', t:'减重期间的面部与皮肤变化', n:'上线前需皮肤科确认', f:'02-用药中期/M04-减重期间的面部与皮肤变化.html' },
+    { id:'M05', st:'draft', t:'掉头发怎么处理', n:'', f:'02-用药中期/M05-掉头发怎么处理.html' },
+    { id:'M06', st:'draft', t:'情绪低落、想吃东西怎么处理', n:'建议加心理 / 精神科复审', f:'02-用药中期/M06-情绪低落想吃东西怎么处理.html' }
+  ]},
+  { g:'环节 6 · 复查与方案调整', items:[
+    { id:'R01', st:'todo', t:'复查都看哪些指标', n:'旧稿待迁移；代谢指标重于体重' },
+    { id:'R02', st:'todo', t:'复查怎么准备（线上 / 到院两种）', n:'线上交什么；到院的空腹、时长、带什么' },
+    { id:'R03', st:'todo', t:'复查之后方案可能有哪几种变化', n:'维持 / 调整 / 需要面诊，不下承诺' }
+  ]},
+  { g:'环节 7 · 续药', items:[
+    { id:'F01', st:'todo', t:'续药流程和配送', n:'触发时机、下单、冷链签收' },
+    { id:'F02', st:'todo', t:'断药或延迟几天怎么办', n:'断药阈值必须由医生定，产品不拍板' }
+  ]},
+  { g:'环节 8 · 停药与维持期', items:[
+    { id:'E01', st:'todo', t:'什么时候可以停药', n:'旧稿待迁移；由医生按指标决定' },
+    { id:'E02', st:'todo', t:'停药之后怎么维持住', n:'旧稿待迁移；停药不等于结束' },
+    { id:'E03', st:'todo', t:'停药后的随访节奏', n:'多久复查一次、监测什么' }
+  ]},
+  { g:'环节 9 · 跨科转诊', items:[
+    { id:'T01', st:'todo', t:'面部评估能做什么', n:'需皮肤科确认；不承诺效果' },
+    { id:'T02', st:'todo', t:'运动康复是做什么的', n:'取决于有无运动康复科可承接' }
+  ]},
+  { g:'环节 10 · 结营回顾', items:[
+    { id:'G01', st:'todo', t:'怎么看待这一段的变化', n:'数据之外的变化；与 T7 回顾页同源' }
+  ]}
+];
 
-  function pick() {
-    for (var i = 0; i < chips.length; i++) { if (chips[i].checked) return chips[i].value; }
-    return 'all';
+const STATE_TXT = { todo:'未开始', draft:'初稿', done:'已审核' };
+
+/* ===================== 渲染 ===================== */
+const box = document.getElementById('box');
+const q = document.getElementById('q');
+const empty = document.getElementById('empty');
+const chips = document.querySelectorAll('.chip input');
+
+box.innerHTML = GROUPS.map(g => {
+  const rows = g.items.map(it => {
+    const act = it.f
+      ? '<a class="btn-s" href="' + it.f + '">查看</a>' +
+        '<a class="btn-s btn-s--main" href="editor-offline.html?id=' + it.id + '">改稿</a>'
+      : '<span class="off">待写</span>';
+    const key = (it.id + ' ' + it.t + ' ' + (it.n || '')).toLowerCase();
+    return '<div class="row" data-st="' + it.st + '" data-k="' + key + '">' +
+      '<div class="cid">' + it.id + '</div>' +
+      '<div><span class="bd bd--' + it.st + '">' + STATE_TXT[it.st] + '</span></div>' +
+      '<div class="ct">' + it.t + (it.n ? '<em class="nt">' + it.n + '</em>' : '') + '</div>' +
+      '<div class="cn">' + (it.f ? it.f : '—') + '</div>' +
+      '<div class="act">' + act + '</div>' +
+      '</div>';
+  }).join('');
+  return '<section class="grp"><div class="grp__h"><span class="ghn">' + g.g +
+    '</span><span class="ghc">' + g.items.length + ' 条</span></div><div class="gr">' + rows + '</div></section>';
+}).join('');
+
+/* 计数 */
+const cnt = { todo:0, draft:0, done:0, all:0 };
+GROUPS.forEach(g => g.items.forEach(i => { cnt[i.st]++; cnt.all++; }));
+document.getElementById('nAll').textContent = cnt.all;
+document.getElementById('nTodo').textContent = cnt.todo;
+document.getElementById('nDraft').textContent = cnt.draft;
+document.getElementById('nDone').textContent = cnt.done;
+
+/* 筛选 */
+const rows = document.querySelectorAll('.row');
+const grps = document.querySelectorAll('.grp');
+
+function pick() {
+  for (let i = 0; i < chips.length; i++) { if (chips[i].checked) return chips[i].value; }
+  return 'all';
+}
+function apply() {
+  const st = pick();
+  const kw = q.value.trim().toLowerCase();
+  let total = 0;
+  for (let i = 0; i < rows.length; i++) {
+    const r = rows[i];
+    const okState = (st === 'all') || (r.getAttribute('data-st') === st);
+    const okKw = !kw || r.getAttribute('data-k').indexOf(kw) >= 0;
+    const show = okState && okKw;
+    r.hidden = !show;
+    if (show) total++;
   }
-
-  function apply() {
-    var st = pick();
-    var kw = q.value.trim().toLowerCase();
-    var total = 0;
-    for (var i = 0; i < items.length; i++) {
-      var li = items[i];
-      var okState = (st === 'all') || (li.getAttribute('data-st') === st);
-      var okKw = !kw || li.textContent.toLowerCase().indexOf(kw) >= 0;
-      var show = okState && okKw;
-      li.hidden = !show;
-      if (show) total++;
-    }
-    for (var g = 0; g < groups.length; g++) {
-      var vis = groups[g].querySelectorAll('.lst li:not([hidden])');
-      groups[g].hidden = vis.length === 0;
-    }
-    empty.hidden = total > 0;
+  for (let i = 0; i < grps.length; i++) {
+    grps[i].hidden = grps[i].querySelectorAll('.row:not([hidden])').length === 0;
   }
-
-  q.addEventListener('input', apply);
-  for (var i = 0; i < chips.length; i++) { chips[i].addEventListener('change', apply); }
-})();
+  empty.hidden = total > 0;
+}
+q.addEventListener('input', apply);
+for (let i = 0; i < chips.length; i++) { chips[i].addEventListener('change', apply); }
 </script>
 </body>
 </html>
