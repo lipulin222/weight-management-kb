@@ -51,12 +51,12 @@ if (-not $started) {
   exit 1
 }
 
-$url = "http://127.0.0.1:$port/editor.html"
+$url = "http://127.0.0.1:$port/index.html"
 Write-Output ""
-Write-Output "  编辑器已启动： $url"
-Write-Output "  （请用 127.0.0.1 这个地址，不要写 localhost）"
-Write-Output "  目录：$root"
-Write-Output "  关掉这个窗口 = 停止服务"
+Write-Output "  已启动： $url"
+Write-Output "  改稿：在清单页点某一行的「改稿」；改完点「保存本页」即可"
+Write-Output "  导出：清单页右上角「一键导出所有 md」"
+Write-Output "  （请用 127.0.0.1 这个地址，不要写 localhost；关掉这个窗口 = 停止服务）"
 Write-Output ""
 try { Start-Process $url | Out-Null } catch { }
 
@@ -107,6 +107,7 @@ while ($true) {
 
     $status = '200 OK'
     $ctype = 'text/plain; charset=utf-8'
+    $extraHeaders = ''
     $payloadBytes = $null
 
     if ($pathOnly -eq '/api/md' -or $pathOnly -eq '/api/page') {
@@ -186,6 +187,24 @@ while ($true) {
       $payloadBytes = $enc.GetBytes((ConvertTo-Json -Compress @{ ok = $ok; log = ($log -join "`n") }))
       $ctype = 'application/json; charset=utf-8'
     }
+    elseif ($pathOnly -eq '/api/zip') {
+      # 一键导出：把 文案稿 下全部 md 打成 zip 下载
+      $mdDir = Join-Path $root '文案稿'
+      $tmp = Join-Path $env:TEMP ('kbmd-' + [guid]::NewGuid().ToString('N') + '.zip')
+      Add-Type -AssemblyName System.IO.Compression.FileSystem | Out-Null
+      if (Test-Path $tmp) { Remove-Item $tmp -Force }
+      $zip = [System.IO.Compression.ZipFile]::Open($tmp, 'Create')
+      $mdFiles = @(Get-ChildItem -Path $mdDir -Filter '*.md' -File | Sort-Object Name)
+      foreach ($f in $mdFiles) {
+        [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $f.FullName, $f.Name) | Out-Null
+      }
+      $zip.Dispose()
+      $payloadBytes = [System.IO.File]::ReadAllBytes($tmp)
+      Remove-Item $tmp -Force
+      $fn = [System.Uri]::EscapeDataString('文案稿-全部md-' + (Get-Date -Format 'yyyyMMdd') + '.zip')
+      $ctype = 'application/zip'
+      $extraHeaders = "Content-Disposition: attachment; filename=`"wenan-md.zip`"; filename*=UTF-8''$fn`r`n"
+    }
     else {
       $rel = $pathOnly.TrimStart('/')
       if ([string]::IsNullOrEmpty($rel)) { $rel = 'editor.html' }
@@ -199,7 +218,7 @@ while ($true) {
       }
     }
 
-    $head = "HTTP/1.1 $status`r`nContent-Type: $ctype`r`nContent-Length: $($payloadBytes.Length)`r`nConnection: close`r`n`r`n"
+    $head = "HTTP/1.1 $status`r`nContent-Type: $ctype`r`n$($extraHeaders)Content-Length: $($payloadBytes.Length)`r`nConnection: close`r`n`r`n"
     $hb = [System.Text.Encoding]::ASCII.GetBytes($head)
     $ns.Write($hb, 0, $hb.Length)
     $ns.Write($payloadBytes, 0, $payloadBytes.Length)

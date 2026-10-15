@@ -1,5 +1,0 @@
-{
-  "_说明": "在线保存后端（Cloudflare Worker）的地址。留空则不启用在线保存，编辑器退回「导出 md」。部署步骤见 worker/部署说明.md",
-  "endpoint": "",
-  "token": ""
-}

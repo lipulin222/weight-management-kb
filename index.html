@@ -49,6 +49,7 @@ a{color:inherit}
   padding:9px 12px;font-family:var(--font);font-size:13.5px;color:var(--ink);background:#fff;outline:none}
 .q:focus{border-color:var(--zz-blue-3)}
 .hint{font-size:12px;color:var(--ink-3)}
+.hint b{font-weight:700;color:var(--ink-2)}
 
 /* ---------- 分组与行 ---------- */
 .grp{margin-top:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden}
@@ -75,6 +76,8 @@ a{color:inherit}
 .btn-s:hover{border-color:var(--zz-blue-3);color:var(--zz-blue-1)}
 .btn-s--main{border-color:transparent;background:var(--zz-blue-1);color:#fff}
 .btn-s--main:hover{background:var(--zz-blue-2);color:#fff}
+button.btn-s{font-family:var(--font);cursor:pointer}
+button.btn-s:disabled{opacity:.55;cursor:default}
 .off{font-size:12.5px;color:var(--ink-3);padding:6px 0}
 
 /* ---------- 说明卡 ---------- */
@@ -118,7 +121,8 @@ a{color:inherit}
         <label class="chip"><input type="radio" name="st" value="done"><i>已审核 <span class="n" id="nDone">0</span></i></label>
       </div>
       <input class="q" id="q" type="search" placeholder="搜编号或标题，比如 W01、脱发">
-      <span class="hint">改稿入口：<b>editor-offline.html</b>（在线可用）</span>
+      <button class="btn-s btn-s--main" id="btnZip" type="button">一键导出所有 md</button>
+      <span class="hint" id="hintMode">正在检测本机服务…</span>
     </div>
   </div>
 
@@ -132,7 +136,8 @@ a{color:inherit}
       <ul class="ck">
         <li>在这张表上点某一行的<b>改稿</b> → 打开左右对比页，并自动定位到这一篇。</li>
         <li>左边手机预览、右边这篇的 Markdown。<b>只改字</b>，`#` `##` `-` `**` `>` 这些符号别动。</li>
-        <li>在线版：点<b>定稿并发布</b>导出本页 md，发回产品侧；本机版（双击 `start-editor.bat` 打开 editor.html）能直接保存并回灌页面。</li>
+        <li>改完点<b>保存本页</b>，页面只提示<b>保存成功</b>就行，别的不用管。</li>
+        <li>要把全部稿子打包带走：回这张表点<b>一键导出所有 md</b>，自动下载一个 zip。</li>
       </ul>
     </div>
     <div class="card">
@@ -273,6 +278,114 @@ function apply() {
 }
 q.addEventListener('input', apply);
 for (let i = 0; i < chips.length; i++) { chips[i].addEventListener('change', apply); }
+
+/* ===================== 一键导出全部 md ===================== */
+const btnZip = document.getElementById('btnZip');
+const hintMode = document.getElementById('hintMode');
+let SRV = false;
+
+async function getJson(u) {
+  try { const r = await fetch(u); const t = await r.text(); try { return JSON.parse(t); } catch (e) { return null; } }
+  catch (e) { return null; }
+}
+function zipName() {
+  const d = new Date(), p = (n) => String(n).padStart(2, '0');
+  return '文案稿-全部md-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '.zip';
+}
+function saveBlob(blob, name) {
+  const el = document.createElement('a');
+  el.href = URL.createObjectURL(blob); el.download = name;
+  document.body.appendChild(el); el.click();
+  setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
+}
+
+/* 没有本机服务时，浏览器里自己打包（store 模式，不压缩） */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) { c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); } t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) { c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(), d = new Date();
+  const tm = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF;
+  const dt = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  const locals = [], centrals = [];
+  let off = 0;
+  for (const f of files) {
+    const nm = enc.encode(f.name), crc = crc32(f.u8), n = f.u8.length;
+    const lh = new Uint8Array(30 + nm.length), lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true); lv.setUint16(8, 0, true);
+    lv.setUint16(10, tm, true); lv.setUint16(12, dt, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, n, true); lv.setUint32(22, n, true);
+    lv.setUint16(26, nm.length, true); lv.setUint16(28, 0, true);
+    lh.set(nm, 30);
+    locals.push(lh, f.u8);
+    const ch = new Uint8Array(46 + nm.length), cv = new DataView(ch.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true);
+    cv.setUint16(12, tm, true); cv.setUint16(14, dt, true);
+    cv.setUint32(16, crc, true); cv.setUint32(20, n, true); cv.setUint32(24, n, true);
+    cv.setUint16(28, nm.length, true); cv.setUint16(30, 0, true); cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true); cv.setUint16(36, 0, true); cv.setUint32(38, 0, true); cv.setUint32(42, off, true);
+    ch.set(nm, 46);
+    centrals.push(ch);
+    off += lh.length + n;
+  }
+  const cdSize = centrals.reduce((s, c) => s + c.length, 0);
+  const eo = new Uint8Array(22), ev = new DataView(eo.buffer);
+  ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, off, true); ev.setUint16(20, 0, true);
+  return new Blob(locals.concat(centrals, [eo]), { type: 'application/zip' });
+}
+async function zipBySelf() {
+  const meta = await getJson('文案稿/目录.json');
+  if (!meta) throw new Error('目录.json 读不到');
+  const enc = new TextEncoder(), files = [];
+  for (const id of Object.keys(meta)) {
+    const p = String((meta[id] && meta[id].md) || '').replace(/\\/g, '/');
+    if (!p) continue;
+    try {
+      const r = await fetch(p);
+      if (!r.ok) continue;
+      files.push({ name: p.split('/').pop(), u8: enc.encode(await r.text()) });
+    } catch (e) { }
+  }
+  if (!files.length) throw new Error('没有可读的 md');
+  saveBlob(makeZip(files), zipName());
+}
+
+btnZip.addEventListener('click', async () => {
+  const old = btnZip.textContent;
+  btnZip.disabled = true; btnZip.textContent = '打包中…';
+  let ok = false;
+  try {
+    const r = await fetch('api/zip');
+    if (r.ok) { saveBlob(await r.blob(), zipName()); ok = true; }
+  } catch (e) { }
+  if (!ok) { try { await zipBySelf(); ok = true; } catch (e) { } }
+  btnZip.disabled = false; btnZip.textContent = old;
+  if (hintMode) {
+    hintMode.innerHTML = ok
+      ? '已导出，zip 在你的下载目录里'
+      : (SRV ? '导出失败，重试一次' : '请先双击 <b>start-editor.bat</b> 再点导出');
+  }
+});
+
+/* 检测本机服务：有 → 改稿直接进可保存的编辑器；没有 → 提示怎么启动 */
+(async function () {
+  const st = await getJson('api/status');
+  SRV = !!(st && st.repo !== undefined);
+  if (SRV) {
+    document.querySelectorAll('.act a[href^="editor-offline.html"]').forEach(a => {
+      a.setAttribute('href', a.getAttribute('href').replace('editor-offline.html', 'editor.html'));
+    });
+    if (hintMode) hintMode.textContent = '本机服务已连接 · 改完点保存即可';
+  } else if (hintMode) {
+    hintMode.innerHTML = '只读模式 · 想直接保存就双击 <b>start-editor.bat</b>';
+  }
+})();
 </script>
 </body>
 </html>
