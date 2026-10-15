@@ -6,6 +6,8 @@
   （仓库 Settings → Pages → Source 选 `Deploy from a branch` → `main` / `(root)` → Save，构建约 1 分钟）
 - **仓库浏览**：`https://github.com/lipulin222/weight-management-kb`
 
+> 给同事看的 1 分钟上手说明：[`使用说明.md`](使用说明.md)
+
 ## 怎么用
 
 | 想干什么 | 打开 |
