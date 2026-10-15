@@ -30,7 +30,7 @@ function In-Git([string[]]$gArgs) {
   try {
     Set-Location $root
     $ErrorActionPreference = 'Continue'
-    return (& git $gArgs 2>&1 | Out-String).Trim()
+    return (& git $gArgs 2>$null | Out-String).Trim()
   } catch { return '' }
   finally { $ErrorActionPreference = $eap; Set-Location $prev }
 }
