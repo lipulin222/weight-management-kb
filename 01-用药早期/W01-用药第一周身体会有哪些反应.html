@@ -171,6 +171,11 @@ body{display:flex;justify-content:center;min-height:100vh}
 .topbar__back svg{width:20px;height:20px}
 .topbar__back:active{background:var(--hover)}
 .topbar__spacer{width:36px;height:36px}
+/* ---------- 顶栏 · 内容目录入口（回索引页） ---------- */
+.topbar__idx{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;border-radius:50%;color:var(--ink-2);text-decoration:none}
+.topbar__idx svg{width:20px;height:20px}
+.topbar__idx:active{background:var(--hover)}
 .topbar__title{flex:1;text-align:center;font-size:13px;font-weight:700;
   letter-spacing:1.2px;color:var(--ink-2)}
 
@@ -244,7 +249,9 @@ body{display:flex;justify-content:center;min-height:100vh}
         <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="topbar__title">科学减重</div>
-      <span class="topbar__spacer"></span>
+            <a class="topbar__idx" href="../index.html" aria-label="内容目录">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </a>
     </header>
 
     <main class="page">
