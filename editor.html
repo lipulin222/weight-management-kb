@@ -99,7 +99,9 @@ const OFFLINE = Object.keys(DOCS).length > 0;
 
 let DIRTY = {};        // id -> true
 let CUR = ARTICLES[0].id;
-let ONLINE = false;    // 本机服务是否可用（能保存 / 回灌 / 发布）；不可用则降级为「导出 md」
+let ONLINE = false;    // 本机服务是否可用（能保存 / 回灌 / 发布）
+let SAVE_API = '';     // 在线保存后端（Cloudflare Worker）地址；空 = 没配，退回「导出 md」
+let SAVE_TOKEN = '';   // 在线保存后端口令
 
 /* 取 JSON：解析不了就返回 null —— 线上没有 api 时拿到的是 404 的 HTML，
    旧写法 r.json() 会抛 "Unexpected token '<'"，现在统一吞掉并走降级分支 */
@@ -121,12 +123,38 @@ function downloadMd(name, text) {
   document.body.appendChild(el); el.click();
   setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
 }
+/* 在线保存：把文案稿直接 commit 进仓库（只写 md，页面 HTML 由本机 回灌.ps1 生成） */
+async function loadSaveCfg() {
+  const j = await getJson('保存服务.json');
+  if (j && j.endpoint) { SAVE_API = String(j.endpoint).replace(/\/+$/, ''); SAVE_TOKEN = j.token || ''; }
+}
+async function saveToRepo(files, message) {
+  const r = await fetch(SAVE_API + '/api/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-Save-Token': SAVE_TOKEN },
+    body: JSON.stringify({ files: files, message: message || '在线保存文案稿' })
+  });
+  const t = await r.text();
+  let j = null; try { j = JSON.parse(t); } catch (e) {}
+  if (!j) throw new Error('保存服务没返回 JSON（地址配错了？）');
+  if (!j.ok) throw new Error(j.error || '保存失败');
+  return j;
+}
+function filesOf(list) {
+  return list.map(a => ({ path: a.md.replace(/\\/g, '/'), content: DOCS[a.id] }));
+}
 function setMode() {
-  $('#btnSave').textContent = ONLINE ? '保存本页' : '导出本页 md';
-  $('#btnPub').textContent = ONLINE ? '定稿并发布到 GitHub' : '导出本页 md（发回产品侧）';
-  $('#btnSaveAll').hidden = !ONLINE;
+  const mode = ONLINE ? 'srv' : (SAVE_API ? 'api' : 'off');
+  $('#btnSave').textContent = (mode === 'off') ? '导出本页 md' : '保存本页';
+  $('#btnSaveAll').textContent = (mode === 'srv') ? '保存全部' : '全部保存到仓库';
+  $('#btnPub').textContent = (mode === 'srv') ? '定稿并发布到 GitHub'
+                            : (mode === 'api') ? '全部保存到仓库' : '导出本页 md（发回产品侧）';
+  $('#btnSaveAll').hidden = (mode === 'off');
   const t = $('#modeTag');
-  if (t) { t.textContent = ONLINE ? '本机服务 · 可保存与发布' : '只读 · 只能导出 md'; }
+  if (t) {
+    t.textContent = (mode === 'srv') ? '本机服务 · 可保存与发布'
+                   : (mode === 'api') ? '在线保存 · 直接写入仓库' : '只读 · 只能导出 md';
+  }
 }
 
 /* ===================== 单页 md → 页面 HTML ===================== */
@@ -258,9 +286,15 @@ function show(id) {
 
 /* ===================== 保存 / 发布 ===================== */
 async function saveOne(a) {
-  if (!ONLINE) {                          // 没有本机服务：导出这一页的 md
+  if (!ONLINE && SAVE_API) {              // 在线保存：直接写进仓库
+    const j = await saveToRepo([{ path: a.md.replace(/\\/g, '/'), content: DOCS[a.id] }], '保存 ' + a.id + ' 文案稿');
+    delete DIRTY[a.id];
+    markDirty(false);
+    return j;
+  }
+  if (!ONLINE) {                          // 只读：导出这一页的 md
     downloadMd(a.md.split('/').pop(), DOCS[a.id]);
-    return;
+    return null;
   }
   const j = await getJson('api/md?file=' + encodeURIComponent(a.md), { method:'POST', body: DOCS[a.id] });
   if (!j || !j.ok) throw new Error('保存失败：' + a.md + '（本机服务没在跑？先双击 start-editor.bat 再打开本页）');
@@ -284,36 +318,57 @@ $('#btnSave').addEventListener('click', async () => {
   const b = $('#btnSave'); b.disabled = true; say('处理中…');
   try {
     const a = ARTICLES.find(x => x.id === CUR);
-    await saveOne(a);
-    say(ONLINE ? ('已保存：' + a.md)
-               : ('没有本机服务（线上只读）：已导出这一页的 md —— ' + a.md.split('/').pop() + '。发回产品侧回灌即可。'), 'ok');
-  } catch (e) { say(e.message, 'err'); }
+    const j = await saveOne(a);
+    if (ONLINE) say('已保存：' + a.md, 'ok');
+    else if (SAVE_API) say('已写进仓库：' + a.md + '\ncommit ' + (j.commit || '').slice(0, 7) + ' · Pages 约 1 分钟后更新（页面 HTML 需本机跑 回灌.ps1）', 'ok');
+    else say('线上只读：已导出这一页的 md —— ' + a.md.split('/').pop() + '，发回产品侧回灌即可。', 'ok');
+  } catch (e) { say('保存失败：' + e.message, 'err'); }
   b.disabled = false;
 });
 
 $('#btnSaveAll').addEventListener('click', async () => {
   const b = $('#btnSaveAll'); b.disabled = true;
-  if (!ONLINE) {
-    say('「保存全部」需要本机服务：双击 start-editor.bat 后再打开本页；线上只能一页一页导出 md。', 'err');
+  if (!ONLINE && !SAVE_API) {
+    say('「保存全部」需要本机服务或在线保存后端；当前是只读模式，只能一页一页导出 md。', 'err');
     b.disabled = false;
     return;
   }
-  say('保存全部…');
   try {
-    for (const a of ARTICLES) await saveOne(a);
-    say('全部文案稿已保存（' + ARTICLES.length + ' 篇）。', 'ok');
-  } catch (e) { say(e.message, 'err'); }
+    if (ONLINE) {
+      say('保存全部…');
+      for (const a of ARTICLES) await saveOne(a);
+      say('全部文案稿已保存（' + ARTICLES.length + ' 篇）。', 'ok');
+    } else {
+      say('提交到仓库…');
+      const j = await saveToRepo(filesOf(ARTICLES), $('#cmtMsg').value || '在线保存全部文案稿');
+      ARTICLES.forEach(a => delete DIRTY[a.id]); markDirty(false);
+      say('已写进仓库：' + ARTICLES.length + ' 份文案稿 · 一个 commit ' + (j.commit || '').slice(0, 7) + '\n' + (j.url || '') + '\nPages 约 1 分钟后更新；页面 HTML 需本机跑一次 回灌.ps1。', 'ok');
+    }
+  } catch (e) { say('保存失败：' + e.message, 'err'); }
   b.disabled = false;
 });
 
 $('#btnPub').addEventListener('click', async () => {
   const b = $('#btnPub');
-  if (!ONLINE) {
+  if (!ONLINE && !SAVE_API) {
     const a = ARTICLES.find(x => x.id === CUR);
     const name = a.md.split('/').pop();
     downloadMd(name, $('#md').value);
-    say('没有本机服务（线上只读模式）：已导出这一页的 md —— ' + name + '\n' +
+    say('线上只读模式：已导出这一页的 md —— ' + name + '\n' +
         '发回产品侧回灌上线；要在本机直接保存并推送，请先双击 start-editor.bat，再用它给的地址打开本页。', 'ok');
+    return;
+  }
+  if (!ONLINE && SAVE_API) {
+    if (!confirm('把全部文案稿提交进仓库？\n（只提交 md；页面 HTML 之后由本机 回灌.ps1 生成）')) return;
+    b.disabled = true;
+    try {
+      say('提交到仓库…');
+      const j = await saveToRepo(filesOf(ARTICLES), $('#cmtMsg').value || '医学编辑定稿');
+      ARTICLES.forEach(a => delete DIRTY[a.id]); markDirty(false);
+      say('已写进仓库：' + ARTICLES.length + ' 份文案稿 · 一个 commit ' + (j.commit || '').slice(0, 7) + '\n' + (j.url || '') +
+          '\n下一步：本机跑一次 回灌.ps1 生成页面并推送。', 'ok');
+    } catch (e) { say('保存失败：' + e.message, 'err'); }
+    b.disabled = false;
     return;
   }
   if (!confirm('定稿：保存全部文案 → 回灌全部页面 → 提交并推送到 GitHub？')) return;
@@ -341,6 +396,7 @@ $('#btnPub').addEventListener('click', async () => {
     // 探测本机服务：有 → 能保存 / 回灌 / 发布；没有 → 只读，导出 md
     const probe = await getJson('api/status');
     ONLINE = !!(probe && probe.repo !== undefined);
+    if (!ONLINE) await loadSaveCfg();     // 本机没跑服务时，看看有没有配在线保存后端
     await loadDocs();
     await loadFigs();
     fillSelect();
@@ -349,9 +405,14 @@ $('#btnPub').addEventListener('click', async () => {
     const hit = want && ARTICLES.some(a => a.id === want) ? want : ARTICLES[0].id;
     show(hit);
     setMode();
-    if (!ONLINE) {
-      say('只读模式：没检测到本机服务。改完点「导出本页 md」，把文件发回产品侧回灌；\n' +
+    if (!ONLINE && !SAVE_API) {
+      say('只读模式：没检测到本机服务，也没配在线保存后端。改完点「导出本页 md」，把文件发回产品侧回灌；\n' +
           '要在本机直接保存 / 回灌 / 推送，请双击 start-editor.bat，再用它给出的地址打开本页。');
+      return;
+    }
+    if (!ONLINE) {
+      say('在线保存就绪：改完点「保存本页」直接写进仓库（只提交文案 md）。\n' +
+          '页面 HTML 保持由本机 回灌.ps1 生成，保证样式一致。');
       return;
     }
     say('就绪 · ' + ARTICLES.length + ' 页一页一稿 · Git：' + (probe.repo || '未初始化') +
