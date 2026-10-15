@@ -6,6 +6,7 @@
 <title>用药第一周，身体会有哪些反应</title>
 <link rel="icon" href="../assets/branding-pic/icon.png">
 <style>
+
 /* ==========================================================================
    科学减重 · 科普内容页 / 视觉规范：与 online-health-care/online-service.html、
    patient-education 同源（卓正 VI 2025.01 + 420px 手机外壳 + 卡片体系）
@@ -176,10 +177,8 @@ body{display:flex;justify-content:center;min-height:100vh}
   justify-content:center;border-radius:50%;color:var(--ink-2);text-decoration:none}
 .topbar__idx svg{width:20px;height:20px}
 .topbar__idx:active{background:var(--hover)}
-.topbar__title{flex:1;text-align:center;font-size:13px;font-weight:700;
-  letter-spacing:1.2px;color:var(--ink-2)}
+.topbar__title{display:none}
 
-/* 版头与内容之间一条细线，做视觉区分（唯一允许的线） */
 .art-hd{margin:0 -18px 0;padding:12px 18px 22px;background:var(--bg);
   border-radius:0;border-bottom:1px solid #E7E6E4}
 .art-hd__k{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;
@@ -239,6 +238,7 @@ body{display:flex;justify-content:center;min-height:100vh}
   .art-hd__t{font-size:21px}
 }
 .art-hd__lead{margin-top:10px;font-size:13px;line-height:1.75;color:var(--ink-2)}
+
 </style>
 </head>
 <body>
@@ -249,7 +249,7 @@ body{display:flex;justify-content:center;min-height:100vh}
         <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
       <div class="topbar__title">科学减重</div>
-            <a class="topbar__idx" href="../index.html" aria-label="内容目录">
+      <a class="topbar__idx" href="../index.html" aria-label="内容目录">
         <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </a>
     </header>
@@ -261,27 +261,26 @@ body{display:flex;justify-content:center;min-height:100vh}
         <h1 class="art-hd__t">用药第一周，身体会有哪些反应</h1>
         <p class="art-hd__lead">刚打完的这一两周，身体还在适应期，会有哪些变化，一起了解一下。</p>
       </header>
-      
-        <!-- ============ 01 ============ -->
-        <div class="card">
-          <div class="sec-h">
-            <span class="sec-n">01</span>
-            <span class="sec-t">注射当天</span>
-          </div>
+
+      <!-- ============ 01 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">01</span>
+          <span class="sec-t">注射当天</span>
+        </div>
           <ul class="ck">
             <li>注射部位可能有<b>发红、发硬、轻痛</b>，一般几天内自行消退。</li>
             <li>有人当天会比平时<b>累一些</b>。</li>
             <li>部位的处理办法见「第一次注射怎么做」。</li>
           </ul>
+      </div>
+
+      <!-- ============ 02 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">02</span>
+          <span class="sec-t">头一两周比较常见的</span>
         </div>
-      
-        <!-- ============ 02 ============ -->
-        <div class="card">
-          <div class="sec-h">
-            <span class="sec-n">02</span>
-            <span class="sec-t">头一两周比较常见的</span>
-          </div>
-      
           <div class="item">
             <div class="nm">恶心、没胃口</div>
             <div class="ds">空腹或吃得偏油时更明显。</div>
@@ -298,22 +297,21 @@ body{display:flex;justify-content:center;min-height:100vh}
             <div class="nm">乏力</div>
             <div class="ds">饭量下来之后常见。</div>
           </div>
+      </div>
+
+      <!-- ============ 03 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">03</span>
+          <span class="sec-t">多久会减轻</span>
         </div>
-      
-        <!-- ============ 03 ============ -->
-        <div class="card">
-          <div class="sec-h">
-            <span class="sec-n">03</span>
-            <span class="sec-t">多久会减轻</span>
-          </div>
           <ul class="ck">
             <li>多数在<b>一到两周内减轻</b>，之后留下的是稳定的饱腹感。</li>
             <li>每次调整剂量后可能再出现一轮，适应一段时间后会缓下来。</li>
             <li>反应强弱与减重快慢没有对应关系；判断有没有起效见「没明显反应，怎么判断药有没有起效」。</li>
             <li>反应重到影响吃饭、睡觉或上班 —— 联系我们。</li>
           </ul>
-        </div>
-
+      </div>
 
   <!-- ============ 审核与说明（三件套） ============ -->
   <div class="card info">

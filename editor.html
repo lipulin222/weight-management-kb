@@ -89,6 +89,7 @@ const ARTICLES = [
 const DOCS = { /*__DOCS__*/ };
 const HEAD = ''; /*__HEAD__*/
 const FIGS = { /*__FIGS__*/ };
+const META = { /*__META__*/ };   /* 页目表：离线版由 回灌.ps1 内联；服务版读 文案稿/目录.json */
 
 const $ = (s) => document.querySelector(s);
 const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -182,6 +183,16 @@ async function loadHead() {
   const t = await fetch('00-规范/科普内容页模板.html').then(r => r.text());
   const s = t.indexOf('<style>'), e = t.indexOf('</style>');
   HEAD = (s >= 0 && e > s) ? t.slice(s + 7, e) : '';
+}
+async function loadMeta() {
+  let src = null;
+  if (Object.keys(META).length) { src = META; }
+  else { try { src = await fetch('文案稿/目录.json').then(r => r.json()); } catch (e) {} }
+  if (!src) return;
+  const list = Object.keys(src).map(k => ({ id:k, md:src[k].md, html:src[k].html }))
+    .sort((a, b) => a.id.localeCompare(b.id));
+  ARTICLES.length = 0;
+  list.forEach(x => ARTICLES.push(x));
 }
 async function loadDocs() {
   if (OFFLINE) return;
@@ -283,6 +294,7 @@ $('#btnPub').addEventListener('click', async () => {
 (async function init() {
   try {
     await loadHead();
+    await loadMeta();
     await loadDocs();
     await loadFigs();
     fillSelect();

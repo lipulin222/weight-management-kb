@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>停药之后怎么维持住</title>
+<link rel="icon" href="../assets/branding-pic/icon.png">
+<style>
+
+/* ==========================================================================
+   科学减重 · 科普内容页 / 视觉规范：与 online-health-care/online-service.html、
+   patient-education 同源（卓正 VI 2025.01 + 420px 手机外壳 + 卡片体系）
+   ========================================================================== */
+@font-face{font-family:"ZZ-ZhunYuan";src:url("../assets/branding-pic/fonts/方正准圆_GBK.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"ZZ-ZhunYuan";src:url("../assets/branding-pic/fonts/方正粗圆_GBK.woff2") format("woff2"),url("../assets/branding-pic/fonts/方正粗圆_GBK.woff") format("woff");font-weight:700;font-display:swap}
+@font-face{font-family:"ZZ-Myriad";src:url("../assets/branding-pic/fonts/MyriadPro-Regular.otf") format("opentype");font-weight:400;font-display:swap}
+@font-face{font-family:"ZZ-Myriad";src:url("../assets/branding-pic/fonts/MyriadPro-Bold.otf") format("opentype");font-weight:700;font-display:swap}
+
+:root{
+  --zz-blue-1:#006F8A; --zz-blue-2:#00809E; --zz-blue-3:#009BBF; --zz-cyan:#00BED6;
+  --zz-pale:#D9EEF2; --zz-pale-2:#C7E6EE; --zz-bg:#F6F6F6; --zz-text:#595757; --zz-yellow:#FFEE6F;
+
+  --bg:var(--zz-bg); --card:#FFFFFF; --ink:var(--zz-text); --ink-2:#7B7978; --ink-3:#A6A4A3;
+  --line:#EBEBEB; --line-soft:#F2F2F2; --line-g:rgba(0,111,138,.18); --hover:#F2FAFC;
+  --accent:var(--zz-blue-1); --accent-soft:var(--zz-pale); --accent-deep:var(--zz-blue-1);
+
+  --radius:22px; --radius-sm:14px; --r-xs:12px;
+  --shadow:0 12px 40px rgba(0,111,138,.10); --shadow-sm:0 4px 16px rgba(0,111,138,.06);
+  --sp-1:12px; --sp-2:16px; --sp-3:20px;
+  --fs-1:11px; --fs-2:12.5px; --fs-3:14px; --fs-4:16px; --fs-5:19px; --fs-6:23px;
+  --ease:cubic-bezier(.2,.8,.2,1);
+  --font:"ZZ-Myriad","ZZ-ZhunYuan","PingFang SC","Microsoft YaHei",sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+s{text-decoration:none}
+[hidden]{display:none !important}
+html,body{font-family:var(--font);color:var(--ink);background:#E9EBEF;line-height:1.7;
+  -webkit-font-smoothing:antialiased}
+body{display:flex;justify-content:center;min-height:100vh}
+
+/* ---------- 手机外壳（与 portal 一致：420px · 桌面端圆角浮起） ---------- */
+.shell{display:flex;justify-content:center;width:100%}
+.phone{width:100%;max-width:420px;min-height:100vh;position:relative;display:flex;
+  flex-direction:column;overflow:hidden;background:var(--bg);box-shadow:0 0 60px rgba(0,111,138,.10)}
+@media (min-width:480px){.phone{margin:24px 0;min-height:calc(100vh - 48px);border-radius:32px}}
+
+/* ---------- 顶部导航（返回 / 居中标题） ---------- */
+.topbar{height:46px;display:flex;align-items:center;background:var(--bg);padding:0 6px;
+  flex-shrink:0;position:relative;z-index:5;padding-top:env(safe-area-inset-top)}
+.topbar__back{width:40px;height:40px;display:flex;align-items:center;justify-content:center;
+  border:none;background:none;cursor:pointer;color:var(--ink-2);border-radius:10px;flex-shrink:0}
+.topbar__back svg{width:22px;height:22px}
+.topbar__back:active{background:rgba(0,111,138,.08)}
+.topbar__spacer{width:40px;height:40px;flex-shrink:0}
+.topbar__title{flex:1;text-align:center;font-size:16.5px;font-weight:700;letter-spacing:.3px;color:var(--ink)}
+
+/* ---------- 版心 ---------- */
+.page{flex:1;padding:0 18px calc(28px + env(safe-area-inset-bottom))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow-sm);padding:var(--sp-2)}
+.card + .card{margin-top:var(--sp-1)}
+
+/* ---------- 标题卡 ---------- */
+.ar__head{margin-top:var(--sp-1)}
+.ar__t{font-size:var(--fs-6);font-weight:700;line-height:1.42;color:var(--ink)}
+
+/* ---------- 节 ---------- */
+.sec-h{display:flex;align-items:baseline;gap:8px;margin-bottom:var(--sp-1)}
+.sec-n{font-family:"ZZ-Myriad",var(--font);font-size:var(--fs-1);font-weight:700;
+  color:var(--zz-blue-3);letter-spacing:.6px}
+.sec-t{font-size:var(--fs-4);font-weight:700;line-height:1.5;color:var(--zz-blue-3)}
+
+/* ---------- 清单条目 ---------- */
+.ck{list-style:none}
+.ck li{position:relative;padding-left:18px;font-size:var(--fs-3);color:var(--ink);
+  line-height:1.85;margin-bottom:7px}
+.ck li:last-child{margin-bottom:0}
+.ck li::before{content:"";position:absolute;left:2px;top:10px;width:5px;height:5px;
+  border-radius:50%;background:var(--zz-blue-3)}
+.ck li b{font-weight:700}
+
+/* ---------- 名称 + 说明 ---------- */
+.item + .item{margin-top:var(--sp-1)}
+.item .nm{font-size:var(--fs-3);font-weight:700;color:var(--ink)}
+.item .ds{font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
+
+/* ---------- 步骤 ---------- */
+.step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line-soft)}
+.step:first-child{padding-top:0}
+.step:last-child{border-bottom:0;padding-bottom:0}
+.step .n{flex:0 0 26px;height:26px;border-radius:50%;background:var(--accent);color:#fff;
+  font-family:"ZZ-Myriad",var(--font);font-size:12px;font-weight:700;line-height:26px;text-align:center}
+.step .c{flex:1;min-width:0}
+.step .t{font-size:var(--fs-3);font-weight:700;color:var(--ink)}
+.step .d{font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
+.step .d em{font-style:normal;font-weight:700;color:var(--accent-deep)}
+
+/* ---------- 部位 / 并列项 ---------- */
+.zone{display:flex;gap:10px;align-items:flex-start;margin-bottom:8px}
+.zone .dot{flex:0 0 5px;height:5px;border-radius:50%;background:var(--zz-blue-3);margin-top:11px}
+.zone .zc{flex:1;font-size:var(--fs-3);color:var(--ink-2);line-height:1.8}
+.zone .zc b{font-weight:700;color:var(--ink)}
+
+/* ---------- 浅蓝提示块 ---------- */
+.no{background:var(--accent-soft);border-radius:var(--r-xs);padding:var(--sp-1);
+  font-size:var(--fs-2);color:var(--accent-deep);line-height:1.8;margin-top:var(--sp-1)}
+.no b{font-weight:700}
+
+/* ---------- 插图 ---------- */
+.fig{margin-top:var(--sp-1);background:#FBFDFE;border:1px solid var(--line);
+  border-radius:var(--r-xs);padding:12px 12px 10px;text-align:center}
+.fig__tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.5px;
+  color:var(--accent-deep);background:var(--accent-soft);border-radius:4px;padding:1px 6px;margin-bottom:8px}
+.fig img,.fig svg{display:block;width:100%;height:auto;max-height:250px;margin:0 auto}
+.fig__cap{font-size:var(--fs-1);color:var(--ink-3);line-height:1.65;margin-top:8px;text-align:left}
+
+/* ---------- 占位图（未出图时的过渡形态） ---------- */
+.ph{background:#FBFDFE;border:1.5px dashed #B9D3DA;border-radius:var(--r-xs);
+  padding:var(--sp-2);text-align:center;margin-top:var(--sp-1);color:var(--ink-3)}
+.ph .pht{font-size:var(--fs-2);font-weight:700;color:var(--ink-2)}
+.ph .pht .pn{color:var(--accent-deep)}
+.ph .phd{font-size:var(--fs-1);line-height:1.8;text-align:left;background:var(--card);
+  border-radius:8px;padding:8px 12px;margin-top:10px}
+.figure{background:#FBFDFE;border:1px solid var(--line);border-radius:var(--r-xs);
+  padding:12px;text-align:center;margin-top:var(--sp-1);position:relative}
+.figure .fb{position:absolute;top:10px;right:12px;font-size:10px;color:var(--ink-3);
+  border:1px dashed #B9D3DA;border-radius:4px;padding:1px 7px}
+.figure svg{max-width:100%;height:auto}
+.fig-cap{font-size:var(--fs-1);color:var(--ink-3);line-height:1.65;margin-top:8px}
+
+/* ---------- 吸底 AI 按钮 ---------- */
+.askbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;
+  max-width:420px;z-index:6;padding:10px 18px calc(10px + env(safe-area-inset-bottom));
+  background:rgba(246,246,246,.92);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+@media (min-width:480px){.askbar{bottom:24px;border-radius:0 0 32px 32px}}
+.page{padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+.btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;cursor:pointer;
+  font-family:var(--font);color:#fff;border:none;border-radius:14px;padding:13px;
+  font-size:var(--fs-3);font-weight:700;letter-spacing:.3px;
+  background:linear-gradient(135deg,var(--zz-blue-3) 0%,var(--zz-blue-2) 55%,var(--zz-blue-1) 100%);
+  box-shadow:0 8px 20px rgba(0,111,138,.22);transition:transform .15s var(--ease),box-shadow .15s var(--ease)}
+.btn:active{transform:scale(.985);box-shadow:0 4px 10px rgba(0,111,138,.16)}
+
+/* ---------- 审核与说明卡（三件套） ---------- */
+.info{padding:var(--sp-2)}
+.ar__rv{display:flex;align-items:center;gap:8px;font-size:var(--fs-1);color:var(--accent-deep);
+  background:var(--accent-soft);border-radius:var(--r-xs);padding:8px var(--sp-1);line-height:1.6}
+.ar__rv-i{flex-shrink:0;background:var(--accent);color:#fff;border-radius:4px;
+  padding:2px 6px;font-size:10px;letter-spacing:.5px}
+.disclaim{font-size:var(--fs-1);color:var(--ink-3);line-height:1.8;margin-top:var(--sp-1)}
+
+/* ---------- 索引页 ---------- */
+.tip{background:var(--accent-soft);border-radius:var(--r-xs);padding:var(--sp-1);
+  font-size:var(--fs-2);color:var(--accent-deep);line-height:1.8}
+.tip + .tip{margin-top:var(--sp-1)}
+.tip b{font-weight:700}
+.lst{list-style:none}
+.lst li + li{border-top:1px solid var(--line-soft)}
+.lst a{display:flex;align-items:baseline;gap:10px;padding:13px 0;min-height:48px;
+  text-decoration:none;color:var(--ink)}
+.lst .id{flex:0 0 32px;font-family:"ZZ-Myriad",var(--font);font-size:var(--fs-1);
+  font-weight:700;color:var(--zz-blue-3)}
+.lst .t{flex:1;min-width:0;font-size:var(--fs-3);line-height:1.5}
+@media (hover:hover){.lst a:hover .t{color:var(--accent-deep)}}
+@media (max-width:360px){.page{padding-left:14px;padding-right:14px}}
+
+/* ===== 版头 P4（定稿）：眉标 + 左对齐深墨标题，页面底色，无装饰 ===== */
+.topbar{background:var(--bg);position:relative;z-index:2}
+.topbar__back{width:36px;height:36px;border-radius:50%;
+  background:transparent;color:var(--ink-2)}
+.topbar__back svg{width:20px;height:20px}
+.topbar__back:active{background:var(--hover)}
+.topbar__spacer{width:36px;height:36px}
+/* ---------- 顶栏 · 内容目录入口（回索引页） ---------- */
+.topbar__idx{width:36px;height:36px;flex-shrink:0;display:flex;align-items:center;
+  justify-content:center;border-radius:50%;color:var(--ink-2);text-decoration:none}
+.topbar__idx svg{width:20px;height:20px}
+.topbar__idx:active{background:var(--hover)}
+.topbar__title{display:none}
+
+.art-hd{margin:0 -18px 0;padding:12px 18px 22px;background:var(--bg);
+  border-radius:0;border-bottom:1px solid #E7E6E4}
+.art-hd__k{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;
+  color:var(--zz-blue-3);margin-bottom:9px}
+.art-hd__t{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-.3px;
+  color:#33393B;padding-left:0;text-wrap:balance}
+/* 首张卡片与版头留出常规间距（不做重叠） */
+.page > .card:first-of-type{margin-top:var(--sp-1)}
+/* 入场：一次性错峰浮现，不散点动效 */
+@keyframes zzUp{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.page > .card,.page > .ar__ask{animation:zzUp .36s var(--ease) both}
+.page > .card:nth-of-type(2){animation-delay:.06s}
+.page > .card:nth-of-type(3){animation-delay:.12s}
+.page > .card:nth-of-type(4){animation-delay:.18s}
+.page > .card:nth-of-type(5){animation-delay:.24s}
+.page > .ar__ask{animation-delay:.30s}
+@media (prefers-reduced-motion:reduce){.page > .card,.page > .ar__ask{animation:none}}
+/* ===== v3.2 细节打磨 ===== */
+.card{border-color:#F0EFEE;box-shadow:0 4px 14px rgba(0,111,138,.055)}
+.sec-h{align-items:center;gap:9px;padding-bottom:10px;margin-bottom:12px;
+  border-bottom:1px solid var(--line-soft)}
+.sec-n{display:inline-flex;align-items:center;justify-content:center;
+  min-width:22px;height:18px;padding:0 5px;border-radius:6px;
+  background:var(--accent-soft);color:var(--zz-blue-1);font-size:10.5px;
+  letter-spacing:.4px}
+.sec-t{font-size:var(--fs-4);line-height:1.45}
+.ck li::before{width:5px;height:5px;border-radius:1px;top:9px;left:3px;
+  background:var(--zz-blue-3);transform:rotate(45deg)}
+.ck li{padding-left:19px}
+.item .nm{display:flex;align-items:center;gap:7px}
+.item .nm::before{content:"";flex:0 0 5px;height:5px;border-radius:1px;
+  background:var(--zz-blue-3);transform:rotate(45deg)}
+.item + .item{margin-top:14px;padding-top:14px;border-top:1px dashed #F0EFEE}
+.ar__ask{border-color:rgba(0,111,138,.14)}
+.info .disclaim{border-top:1px solid var(--line-soft);padding-top:10px;margin-top:12px}
+/* ---------- 配图容器：图位 + 示意标注 + 图注 ---------- */
+.fig__area{display:block;width:100%;aspect-ratio:16 / 9;background:#F7FBFD;
+  border:1px dashed #CFE0E6;border-radius:8px}
+.fig img,.fig svg{max-height:240px}
+
+/* ---------- 表格（2–3 列，手机不横向滚动） ---------- */
+.tbl{margin-top:var(--sp-1);border:1px solid var(--line);border-radius:var(--r-xs);
+  overflow:hidden;background:var(--card)}
+.tbl table{width:100%;border-collapse:collapse;table-layout:fixed}
+.tbl caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.tbl th,.tbl td{padding:10px 12px;text-align:left;font-size:var(--fs-2);line-height:1.6;
+  border-bottom:1px solid var(--line-soft);vertical-align:top;word-break:break-word}
+.tbl thead th{background:var(--accent-soft);color:var(--zz-blue-1);font-size:var(--fs-1);
+  font-weight:700;letter-spacing:.3px;border-bottom-color:rgba(0,111,138,.12)}
+.tbl tbody th{width:38%;font-weight:700;color:var(--ink)}
+.tbl tbody tr:last-child th,.tbl tbody tr:last-child td{border-bottom:0}
+.tbl .num{font-family:"ZZ-Myriad",var(--font);font-weight:700;color:var(--zz-blue-1);
+  text-align:center}
+.tbl__note{font-size:var(--fs-1);color:var(--ink-3);line-height:1.7;margin-top:8px}
+
+@media (max-width:360px){
+  .art-hd__t{font-size:21px}
+}
+.art-hd__lead{margin-top:10px;font-size:13px;line-height:1.75;color:var(--ink-2)}
+
+</style>
+</head>
+<body>
+<div class="shell">
+  <div class="phone">
+    <header class="topbar">
+      <button class="topbar__back" type="button" onclick="history.back()" aria-label="返回">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M15 6L9 12L15 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="topbar__title">科学减重</div>
+      <a class="topbar__idx" href="../index.html" aria-label="内容目录">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </a>
+    </header>
+
+    <main class="page">
+      <!-- ============ 版头 ============ -->
+      <header class="art-hd">
+        <span class="art-hd__k">科学减重服务</span>
+        <h1 class="art-hd__t">停药之后怎么维持住</h1>
+        <p class="art-hd__lead">停药不是结束，这段时间怎么过，决定体重怎么回来。</p>
+      </header>
+
+      <!-- ============ 01 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">01</span>
+          <span class="sec-t">三件要坚持的事</span>
+        </div>
+          <ul class="ck">
+            <li><b>吃够蛋白质、保住肌肉</b> —— 基础代谢靠肌肉托着。</li>
+            <li><b>每周做两三次力量训练</b> —— 维持期的体重也靠它。</li>
+            <li><b>继续记体重</b> —— 有变化能早点发现。</li>
+          </ul>
+      </div>
+
+      <!-- ============ 02 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">02</span>
+          <span class="sec-t">数字怎么读</span>
+        </div>
+          <ul class="ck">
+            <li>小范围上下浮动是正常的，不因为某天涨了就少吃。</li>
+            <li>连续几周单向上涨 —— 联系我们，别等到明显反弹。</li>
+          </ul>
+      </div>
+
+      <!-- ============ 03 ============ -->
+      <div class="card">
+        <div class="sec-h">
+          <span class="sec-n">03</span>
+          <span class="sec-t">复查与求助</span>
+        </div>
+          <ul class="ck">
+            <li>复查按医生排的节奏走，重点看代谢指标。</li>
+            <li>吃的东西又开始控制不住 —— 联系我们。</li>
+          </ul>
+      </div>
+
+  <!-- ============ 审核与说明（三件套） ============ -->
+  <div class="card info">
+    <div class="ar__rv"><span class="ar__rv-i">审核</span>李医生 · 内分泌科 · 主治医师 · 更新 2026.10.15</div>
+    <p class="disclaim">本篇内容仅供参考，具体情况以你的处方、药品说明书和医生指导为准。</p>
+  </div>
+
+  <!-- ============ 吸底问 AI ============ -->
+  <div class="askbar">
+    <button class="btn" type="button">问 AI 减重助理</button>
+  </div>
+    </main>
+  </div>
+</div>
+
+</body>
+</html>
