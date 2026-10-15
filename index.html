@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>减重服务 · 科普内容页（用药早期 / 用药中期）</title>
+<title>减重服务 · 科普内容全量清单</title>
 <link rel="icon" href="assets/branding-pic/icon.png">
 <style>
 /* ==========================================================================
@@ -155,7 +155,8 @@ body{display:flex;justify-content:center;min-height:100vh}
 .tip + .tip{margin-top:var(--sp-1)}
 .tip b{font-weight:700}
 .lst{list-style:none}
-.lst li + li{border-top:1px solid var(--line-soft)}
+.lst li[hidden]{display:none !important}
+.lst li:not([hidden]) + li:not([hidden]){border-top:1px solid var(--line-soft)}
 .lst a{display:flex;align-items:baseline;gap:10px;padding:13px 0;min-height:48px;
   text-decoration:none;color:var(--ink)}
 .lst .id{flex:0 0 32px;font-family:"ZZ-Myriad",var(--font);font-size:var(--fs-1);
@@ -179,6 +180,7 @@ body{display:flex;justify-content:center;min-height:100vh}
   color:var(--zz-blue-3);margin-bottom:9px}
 .art-hd__t{font-size:24px;font-weight:700;line-height:1.4;letter-spacing:-.3px;
   color:#33393B;padding-left:0;text-wrap:balance}
+.art-hd__lead{font-size:13px;color:var(--ink-2);line-height:1.75;margin-top:8px}
 /* 首张卡片与版头留出常规间距（不做重叠） */
 .page > .card:first-of-type{margin-top:var(--sp-1)}
 /* 入场：一次性错峰浮现，不散点动效 */
@@ -213,24 +215,39 @@ body{display:flex;justify-content:center;min-height:100vh}
   border:1px dashed #CFE0E6;border-radius:8px}
 .fig img,.fig svg{max-height:240px}
 
-/* ---------- 表格（2–3 列，手机不横向滚动） ---------- */
-.tbl{margin-top:var(--sp-1);border:1px solid var(--line);border-radius:var(--r-xs);
-  overflow:hidden;background:var(--card)}
-.tbl table{width:100%;border-collapse:collapse;table-layout:fixed}
-.tbl caption{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.tbl th,.tbl td{padding:10px 12px;text-align:left;font-size:var(--fs-2);line-height:1.6;
-  border-bottom:1px solid var(--line-soft);vertical-align:top;word-break:break-word}
-.tbl thead th{background:var(--accent-soft);color:var(--zz-blue-1);font-size:var(--fs-1);
-  font-weight:700;letter-spacing:.3px;border-bottom-color:rgba(0,111,138,.12)}
-.tbl tbody th{width:38%;font-weight:700;color:var(--ink)}
-.tbl tbody tr:last-child th,.tbl tbody tr:last-child td{border-bottom:0}
-.tbl .num{font-family:"ZZ-Myriad",var(--font);font-weight:700;color:var(--zz-blue-1);
-  text-align:center}
-.tbl__note{font-size:var(--fs-1);color:var(--ink-3);line-height:1.7;margin-top:8px}
-
 @media (max-width:360px){
   .art-hd__t{font-size:21px}
 }
+
+/* ==========================================================================
+   全量清单 · v5：状态筛选 / 搜索 / 状态徽标
+   状态只用三档：未开始 todo · 初稿 draft · 已审核 done
+   ========================================================================== */
+.grp[hidden]{display:none !important}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{position:relative;display:inline-flex}
+.chip input{position:absolute;inset:0;opacity:0;width:100%;height:100%;margin:0;cursor:pointer}
+.chip i{display:inline-flex;align-items:baseline;gap:5px;padding:8px 12px;min-height:36px;
+  border-radius:999px;border:1px solid var(--line);background:#fff;font-style:normal;
+  font-size:12.5px;color:var(--ink-2);line-height:1.4;transition:.15s var(--ease)}
+.chip .n{font-family:"ZZ-Myriad",var(--font);font-weight:700;font-size:12px;color:var(--zz-blue-1)}
+.chip input:checked + i{border-color:transparent;background:var(--zz-blue-1);color:#fff}
+.chip input:checked + i .n{color:#fff}
+.qbox{margin-top:12px;position:relative}
+.q{width:100%;border:1px solid var(--line);border-radius:var(--r-xs);padding:11px 12px;
+  font-family:var(--font);font-size:var(--fs-3);color:var(--ink);background:#FCFDFD;outline:none}
+.q:focus{border-color:var(--zz-blue-3)}
+.row{display:flex;align-items:baseline;gap:10px;padding:12px 0;min-height:48px;text-decoration:none;color:var(--ink)}
+.row .id{flex:0 0 30px;font-family:"ZZ-Myriad",var(--font);font-size:11px;font-weight:700;color:var(--zz-blue-3)}
+.row .t{flex:1;min-width:0;font-size:14px;line-height:1.55}
+.row .nt{display:block;font-style:normal;font-size:12px;color:var(--ink-3);line-height:1.6;margin-top:3px}
+.row--off .t{color:var(--ink-2)}
+.bd{flex:0 0 auto;align-self:center;font-size:11px;font-weight:700;line-height:1;
+  padding:5px 8px;border-radius:6px;white-space:nowrap;letter-spacing:.3px}
+.bd--todo{background:#F2F1F0;color:#A6A4A3}
+.bd--draft{background:var(--zz-pale);color:var(--zz-blue-1)}
+.bd--done{background:var(--zz-blue-1);color:#fff}
+.empty{font-size:13px;color:var(--ink-3);text-align:center;padding:24px 0}
 </style>
 </head>
 <body>
@@ -246,70 +263,194 @@ body{display:flex;justify-content:center;min-height:100vh}
 
     <main class="page">
       <header class="art-hd">
-        <span class="art-hd__k">内容库</span>
-        <h1 class="art-hd__t">减重服务 · 科普内容页</h1>
+        <span class="art-hd__k">科学减重服务</span>
+        <h1 class="art-hd__t">科普内容全量清单</h1>
+        <p class="art-hd__lead">40 个选题一条不落，写完的能直接点开。</p>
       </header>
-      
-        <div class="tip">
-          每篇都是自包含 HTML，可直接嵌入产品页面或提醒卡。<b>查找与口径</b>见同目录
-          <b>00-索引-减重科普内容页清单.md</b>；生产依据在 <b>00-规范/</b>，已验收样张在 <b>00-样张/</b>。
+
+      <!-- ============ 状态与筛选 ============ -->
+      <div class="card">
+        <div class="chips">
+          <label class="chip"><input type="radio" name="st" value="all" checked><i>全部 <span class="n">40</span></i></label>
+          <label class="chip"><input type="radio" name="st" value="todo"><i>未开始 <span class="n">26</span></i></label>
+          <label class="chip"><input type="radio" name="st" value="draft"><i>初稿 <span class="n">14</span></i></label>
+          <label class="chip"><input type="radio" name="st" value="done"><i>已审核 <span class="n">0</span></i></label>
         </div>
-      
-        <!-- ============ 用药早期 ============ -->
-        <div class="card">
-          <div class="sec-h">
-            <span class="sec-n">4</span>
-            <span class="sec-t">用药早期</span>
-          </div>
-          <ul class="lst">
-            <li><a href="01-用药早期/W01-用药第一周身体会有哪些反应.html">
-              <span class="id">W01</span><span class="t">用药第一周，身体会有哪些反应</span></a></li>
-            <li><a href="01-用药早期/W02-用药后的反应怎么应对.html">
-              <span class="id">W02</span><span class="t">用药后的反应怎么应对</span></a></li>
-            <li><a href="01-用药早期/W03-没明显反应怎么判断药有没有起效.html">
-              <span class="id">W03</span><span class="t">没明显反应，怎么判断药有没有起效</span></a></li>
-            <li><a href="01-用药早期/W04-吃得少了怎么保证营养.html">
-              <span class="id">W04</span><span class="t">吃得少了，怎么保证营养</span></a></li>
-            <li><a href="01-用药早期/W05-体重多久称一次怎么记.html">
-              <span class="id">W05</span><span class="t">体重多久称一次、怎么记</span></a></li>
-            <li><a href="01-用药早期/W06-减重期间喝酒怎么处理.html">
-              <span class="id">W06</span><span class="t">减重期间喝酒怎么处理</span></a></li>
-          </ul>
+        <div class="qbox">
+          <input class="q" id="q" type="search" placeholder="搜编号或标题，比如 W01、脱发" aria-label="搜索条目">
         </div>
-      
-        <!-- ============ 用药中期 ============ -->
-        <div class="card">
-          <div class="sec-h">
-            <span class="sec-n">5</span>
-            <span class="sec-t">用药中期</span>
-          </div>
-          <ul class="lst">
-            <li><a href="02-用药中期/M01-剂量是怎么一步步调的.html">
-              <span class="id">M01</span><span class="t">剂量是怎么一步步调的</span></a></li>
-            <li><a href="02-用药中期/M02-平台期怎么判断.html">
-              <span class="id">M02</span><span class="t">平台期怎么判断</span></a></li>
-            <li><a href="02-用药中期/M03-掉得太快怎么处理.html">
-              <span class="id">M03</span><span class="t">掉得太快怎么处理</span></a></li>
-            <li><a href="02-用药中期/M04-减重期间的面部与皮肤变化.html">
-              <span class="id">M04</span><span class="t">减重期间的面部与皮肤变化</span></a></li>
-            <li><a href="02-用药中期/M05-掉头发怎么处理.html">
-              <span class="id">M05</span><span class="t">掉头发怎么处理</span></a></li>
-            <li><a href="02-用药中期/M06-情绪低落想吃东西怎么处理.html">
-              <span class="id">M06</span><span class="t">情绪低落、想吃东西怎么处理</span></a></li>
-          </ul>
-        </div>
-      
-        <div class="tip">
-          上线前待办：12 篇过医疗审核与署名；M04 需皮肤科确认，M06 建议心理 / 精神科复审。
-        </div>
-    
-  <!-- ============ 吸底问 AI ============ -->
-  <div class="askbar">
-    <button class="btn" type="button">问 AI 减重助理</button>
-  </div>
-</main>
+      </div>
+
+      <!-- ============ 环节 1 · 购前 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 1</span><span class="sec-t">购前</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">K01</span><span class="t">GLP-1 是怎么帮你减重的<em class="nt">旧稿在 demo ARTICLES，待按新判据迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K02</span><span class="t">什么样的人适合医疗级减重<em class="nt">旧稿在 demo ARTICLES，待迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K03</span><span class="t">一个完整疗程是怎么进行的<em class="nt">旧稿在 demo ARTICLES，待迁移</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K04</span><span class="t">效果怎么看，多久算有变化<em class="nt">旧稿待迁移；与 W05 相邻</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K05</span><span class="t">费用和包含项怎么看<em class="nt">需业务给真实口径，不写占位价</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K06</span><span class="t">它和节食、代餐、运动有什么不同<em class="nt">讲方式差异，不做药物对比</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">K07</span><span class="t">关于减重，最常被问的 10 个问题<em class="nt">购前 FAQ 聚合，每条跳对应长文</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 2 · 消费决策 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 2</span><span class="sec-t">消费决策</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">D01</span><span class="t">这份评估在测什么<em class="nt">每道题对应什么判断依据</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">D02</span><span class="t">为什么还要医生再看一遍<em class="nt">P0，合规必需；线上与到院是两件事</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">D03</span><span class="t">什么情况下需要到医院或做检查<em class="nt">判定标准 + 常见到院的几种情况</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">D04</span><span class="t">如果需要检查，怎么准备<em class="nt">查哪些、是否空腹、异地能否做、多久出结果</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">D05</span><span class="t">不适合用药的人，还能怎么减<em class="nt">P0，防流失；给替代路径</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">D06</span><span class="t">你的健康数据怎么被使用<em class="nt">授权范围、用途、可撤回</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 3 · 用药前 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 3</span><span class="sec-t">用药前</span></div>
+        <ul class="lst">
+          <li data-st="draft"><a class="row" href="00-样张/content-sample-S01.html"><span class="id">S01</span><span class="t">第一次注射怎么做<em class="nt">样张；P1 五步操作图、P2 部位图待设计出正式版</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="00-样张/content-sample-S02.html"><span class="id">S02</span><span class="t">药品怎么保存和签收<em class="nt">样张；P3 签收检查图待设计出正式版</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">S03</span><span class="t">漏打或晚打几天怎么办<em class="nt">旧稿待迁移；补打规则按药品说明书</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">S04</span><span class="t">哪些情况要马上联系医生<em class="nt">P0；各篇兜底动作都靠它承接，优先排</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 4 · 用药早期 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 4</span><span class="sec-t">用药早期（1–4 周）</span></div>
+        <ul class="lst">
+          <li data-st="draft"><a class="row" href="01-用药早期/W01-用药第一周身体会有哪些反应.html"><span class="id">W01</span><span class="t">用药第一周，身体会有哪些反应<em class="nt">对齐旧稿 week1，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="01-用药早期/W02-用药后的反应怎么应对.html"><span class="id">W02</span><span class="t">用药后的反应怎么应对<em class="nt">反应清单已归 W01；样张版在 00-样张/content-sample-W02.html</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="01-用药早期/W03-没明显反应怎么判断药有没有起效.html"><span class="id">W03</span><span class="t">没明显反应，怎么判断药有没有起效<em class="nt">对齐旧稿 noreact，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="01-用药早期/W04-吃得少了怎么保证营养.html"><span class="id">W04</span><span class="t">吃得少了，怎么保证营养<em class="nt">配图：一餐的先后顺序</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="01-用药早期/W05-体重多久称一次怎么记.html"><span class="id">W05</span><span class="t">体重多久称一次、怎么记<em class="nt">配图：单日波动与周均值线</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="01-用药早期/W06-减重期间喝酒怎么处理.html"><span class="id">W06</span><span class="t">减重期间喝酒怎么处理<em class="nt">对齐旧稿 drink，已按新判据重写</em></span><span class="bd bd--draft">初稿</span></a></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 5 · 用药中期 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 5</span><span class="sec-t">用药中期（5–12 周）</span></div>
+        <ul class="lst">
+          <li data-st="draft"><a class="row" href="02-用药中期/M01-剂量是怎么一步步调的.html"><span class="id">M01</span><span class="t">剂量是怎么一步步调的<em class="nt">P0，爬坡期必看；配图：剂量台阶</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="02-用药中期/M02-平台期怎么判断.html"><span class="id">M02</span><span class="t">平台期怎么判断<em class="nt">对齐旧稿 plateau；配图：平台段</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="02-用药中期/M03-掉得太快怎么处理.html"><span class="id">M03</span><span class="t">掉得太快怎么处理<em class="nt">承接 A1 提醒；速度阈值由医疗团队给</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="02-用药中期/M04-减重期间的面部与皮肤变化.html"><span class="id">M04</span><span class="t">减重期间的面部与皮肤变化<em class="nt">上线前需皮肤科确认</em></span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="02-用药中期/M05-掉头发怎么处理.html"><span class="id">M05</span><span class="t">掉头发怎么处理</span><span class="bd bd--draft">初稿</span></a></li>
+          <li data-st="draft"><a class="row" href="02-用药中期/M06-情绪低落想吃东西怎么处理.html"><span class="id">M06</span><span class="t">情绪低落、想吃东西怎么处理<em class="nt">建议加心理 / 精神科复审</em></span><span class="bd bd--draft">初稿</span></a></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 6 · 复查 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 6</span><span class="sec-t">复查与方案调整</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">R01</span><span class="t">复查都看哪些指标<em class="nt">旧稿待迁移；代谢指标重于体重</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">R02</span><span class="t">复查怎么准备（线上 / 到院两种）<em class="nt">线上交什么；到院的空腹、时长、带什么</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">R03</span><span class="t">复查之后方案可能有哪几种变化<em class="nt">维持 / 调整 / 需要面诊，不下承诺</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 7 · 续药 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 7</span><span class="sec-t">续药</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">F01</span><span class="t">续药流程和配送<em class="nt">触发时机、下单、冷链签收</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">F02</span><span class="t">断药或延迟几天怎么办<em class="nt">断药阈值必须由医生定，产品不拍板</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 8 · 停药与维持 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 8</span><span class="sec-t">停药与维持期</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">E01</span><span class="t">什么时候可以停药<em class="nt">旧稿待迁移；由医生按指标决定</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">E02</span><span class="t">停药之后怎么维持住<em class="nt">旧稿待迁移；停药不等于结束</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">E03</span><span class="t">停药后的随访节奏<em class="nt">多久复查一次、监测什么</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 9 · 跨科转诊 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 9</span><span class="sec-t">跨科转诊</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">T01</span><span class="t">面部评估能做什么<em class="nt">需皮肤科确认；不承诺效果</em></span><span class="bd bd--todo">未开始</span></span></li>
+          <li data-st="todo"><span class="row row--off"><span class="id">T02</span><span class="t">运动康复是做什么的<em class="nt">取决于有无运动康复科可承接</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <!-- ============ 环节 10 · 结营回顾 ============ -->
+      <div class="card grp">
+        <div class="sec-h"><span class="sec-n">环节 10</span><span class="sec-t">结营回顾</span></div>
+        <ul class="lst">
+          <li data-st="todo"><span class="row row--off"><span class="id">G01</span><span class="t">怎么看待这一段的变化<em class="nt">数据之外的变化；与 T7 回顾页同源</em></span><span class="bd bd--todo">未开始</span></span></li>
+        </ul>
+      </div>
+
+      <p class="empty" id="empty" hidden>没有符合条件的条目。</p>
+
+      <!-- ============ 说明卡 ============ -->
+      <div class="card info">
+        <div class="sec-h"><span class="sec-n">状态</span><span class="sec-t">三档口径</span></div>
+        <ul class="ck">
+          <li><b>未开始</b> — 还没动笔，或只有 demo 里的旧稿待迁移。</li>
+          <li><b>初稿</b> — 已有页面，可点开直接看；<b>还没过医疗审核与署名</b>。</li>
+          <li><b>已审核</b> — 已通过医疗审核并署名，可上线（当前 0 篇）。</li>
+        </ul>
+        <p class="disclaim">状态的口径两边同步：本页 index.html 与 00-索引-减重科普内容页清单.md。改一边要同步另一边。</p>
+      </div>
+
+      <div class="tip">
+        生产依据与判据在 <b>00-规范/</b>；样张在 <b>00-样张/</b>；文字正本在 <b>文案稿/</b>（一页一稿）。
+      </div>
+    </main>
+
+    <!-- ============ 吸底问 AI ============ -->
+    <div class="askbar">
+      <button class="btn" type="button">问 AI 减重助理</button>
+    </div>
   </div>
 </div>
 
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var empty = document.getElementById('empty');
+  var chips = document.querySelectorAll('.chip input');
+  var items = document.querySelectorAll('.lst li');
+  var groups = document.querySelectorAll('.grp');
+
+  function pick() {
+    for (var i = 0; i < chips.length; i++) { if (chips[i].checked) return chips[i].value; }
+    return 'all';
+  }
+
+  function apply() {
+    var st = pick();
+    var kw = q.value.trim().toLowerCase();
+    var total = 0;
+    for (var i = 0; i < items.length; i++) {
+      var li = items[i];
+      var okState = (st === 'all') || (li.getAttribute('data-st') === st);
+      var okKw = !kw || li.textContent.toLowerCase().indexOf(kw) >= 0;
+      var show = okState && okKw;
+      li.hidden = !show;
+      if (show) total++;
+    }
+    for (var g = 0; g < groups.length; g++) {
+      var vis = groups[g].querySelectorAll('.lst li:not([hidden])');
+      groups[g].hidden = vis.length === 0;
+    }
+    empty.hidden = total > 0;
+  }
+
+  q.addEventListener('input', apply);
+  for (var i = 0; i < chips.length; i++) { chips[i].addEventListener('change', apply); }
+})();
+</script>
 </body>
 </html>
