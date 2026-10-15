@@ -62,8 +62,8 @@ foreach ($f in (Get-ChildItem (Join-Path $root '文案稿') -Filter *.md | Sort-
   if (-not $DIRS.ContainsKey($prefix)) { Write-Host "  跳过（未知前缀 $prefix）：$($f.Name)" -ForegroundColor DarkYellow; continue }
 
   $relDir = $DIRS[$prefix]
-  $htmlRel = $relDir + '\' + $f.BaseName + '.html'
-  $mdRel = '文案稿\' + $f.Name
+  $htmlRel = $relDir + '/' + $f.BaseName + '.html'
+  $mdRel = '文案稿/' + $f.Name
 
   # 卡片
   $cards = ''

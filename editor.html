@@ -45,6 +45,7 @@
   <h1>科普内容 · 编辑与预览</h1>
   <a class="back" href="index.html">← 内容索引</a>
   <span class="tag">一页一稿</span>
+  <span class="tag" id="modeTag"></span>
   <select id="artSel" title="选择要编辑/预览的页"></select>
   <span class="dot" id="dirtyDot" title="有未保存的改动"></span>
   <span class="spacer"></span>
@@ -98,6 +99,35 @@ const OFFLINE = Object.keys(DOCS).length > 0;
 
 let DIRTY = {};        // id -> true
 let CUR = ARTICLES[0].id;
+let ONLINE = false;    // 本机服务是否可用（能保存 / 回灌 / 发布）；不可用则降级为「导出 md」
+
+/* 取 JSON：解析不了就返回 null —— 线上没有 api 时拿到的是 404 的 HTML，
+   旧写法 r.json() 会抛 "Unexpected token '<'"，现在统一吞掉并走降级分支 */
+async function getJson(url, opt) {
+  try {
+    const r = await fetch(url, opt);
+    const t = await r.text();
+    try { return JSON.parse(t); } catch (e) { return null; }
+  } catch (e) { return null; }
+}
+async function getText(url) {
+  try { const r = await fetch(url); return r.ok ? await r.text() : null; } catch (e) { return null; }
+}
+/* 没有后端时：把这一页文案导出成 md，发回产品侧回灌 */
+function downloadMd(name, text) {
+  const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+  const el = document.createElement('a');
+  el.href = URL.createObjectURL(blob); el.download = name;
+  document.body.appendChild(el); el.click();
+  setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
+}
+function setMode() {
+  $('#btnSave').textContent = ONLINE ? '保存本页' : '导出本页 md';
+  $('#btnPub').textContent = ONLINE ? '定稿并发布到 GitHub' : '导出本页 md（发回产品侧）';
+  $('#btnSaveAll').hidden = !ONLINE;
+  const t = $('#modeTag');
+  if (t) { t.textContent = ONLINE ? '本机服务 · 可保存与发布' : '只读 · 只能导出 md'; }
+}
 
 /* ===================== 单页 md → 页面 HTML ===================== */
 function parsePage(md) {
@@ -107,7 +137,7 @@ function parsePage(md) {
   for (const raw of md.split(/\r?\n/)) {
     const l = raw.trim();
     let m;
-    if ((m = l.match(/^#\s+([WMS]\d\d)\s*·\s*(.+)$/))) { out.id = m[1]; out.title = m[2].trim(); continue; }
+    if ((m = l.match(/^#\s+([A-Z]\d\d)\s*·\s*(.+)$/))) { out.id = m[1]; out.title = m[2].trim(); continue; }
     if (/^>\s*导语：/.test(l)) { out.lead = l.replace(/^>\s*导语：/,'').trim(); continue; }
     if (/^>/.test(l)) { out.rev = l.replace(/^>\s*/,'').trim(); continue; }
     if ((m = l.match(/^##\s*配图\s*[（(]第\s*(\d+)\s*节[）)]/))) { figBox.n = m[1]; continue; }
@@ -180,14 +210,14 @@ function say(t, cls) { const m = $('#msg'); m.textContent = t; m.className = cls
 /* ===================== 载入 ===================== */
 async function loadHead() {
   if (HEAD) return;
-  const t = await fetch('00-规范/科普内容页模板.html').then(r => r.text());
+  const t = (await getText('00-规范/科普内容页模板.html')) || '';
   const s = t.indexOf('<style>'), e = t.indexOf('</style>');
   HEAD = (s >= 0 && e > s) ? t.slice(s + 7, e) : '';
 }
 async function loadMeta() {
   let src = null;
   if (Object.keys(META).length) { src = META; }
-  else { try { src = await fetch('文案稿/目录.json').then(r => r.json()); } catch (e) {} }
+  else { src = await getJson('文案稿/目录.json'); }
   if (!src) return;
   const list = Object.keys(src).map(k => ({ id:k, md:src[k].md, html:src[k].html }))
     .sort((a, b) => a.id.localeCompare(b.id));
@@ -197,14 +227,17 @@ async function loadMeta() {
 async function loadDocs() {
   if (OFFLINE) return;
   for (const a of ARTICLES) {
-    DOCS[a.id] = await fetch('api/md?file=' + encodeURIComponent(a.md)).then(r => r.text());
+    let t = null;
+    if (ONLINE) t = await getText('api/md?file=' + encodeURIComponent(a.md));
+    if (t === null) t = await getText(a.md.replace(/\\/g, '/'));   // 静态环境：直接读仓库里的 md
+    DOCS[a.id] = t || '';
   }
 }
 async function loadFigs() {
   if (OFFLINE) return;
   for (const a of ARTICLES) {
     try {
-      const t = await fetch(a.html).then(r => r.text());
+      const t = (await getText(a.html.replace(/\\/g, '/'))) || '';
       const m = t.match(/<figure class="fig">[\s\S]*?(<svg[\s\S]*?<\/svg>)/);
       if (m) FIGS[a.id] = m[1].replace(/\s+/g, ' ').trim();
     } catch (e) {}
@@ -212,7 +245,7 @@ async function loadFigs() {
 }
 function fillSelect() {
   $('#artSel').innerHTML = ARTICLES.map(a => {
-    const t = (DOCS[a.id] || '').match(/^#\s+[WMS]\d\d\s*·\s*(.+)$/m);
+    const t = (DOCS[a.id] || '').match(/^#\s+[A-Z]\d\d\s*·\s*(.+)$/m);
     return '<option value="' + a.id + '">' + a.id + ' · ' + (t ? t[1].trim() : '') + '</option>';
   }).join('');
 }
@@ -225,16 +258,19 @@ function show(id) {
 
 /* ===================== 保存 / 发布 ===================== */
 async function saveOne(a) {
-  const r = await fetch('api/md?file=' + encodeURIComponent(a.md), { method:'POST', body: DOCS[a.id] });
-  const j = await r.json();
-  if (!j.ok) throw new Error('保存失败：' + a.md);
+  if (!ONLINE) {                          // 没有本机服务：导出这一页的 md
+    downloadMd(a.md.split('/').pop(), DOCS[a.id]);
+    return;
+  }
+  const j = await getJson('api/md?file=' + encodeURIComponent(a.md), { method:'POST', body: DOCS[a.id] });
+  if (!j || !j.ok) throw new Error('保存失败：' + a.md + '（本机服务没在跑？先双击 start-editor.bat 再打开本页）');
   delete DIRTY[a.id];
   markDirty(false);
 }
 async function regenOne(a) {
-  const r = await fetch('api/page?file=' + encodeURIComponent(a.html), { method:'POST', body: pageHtml(parsePage(DOCS[a.id]), a.id) });
-  const j = await r.json();
-  if (!j.ok) throw new Error('回灌失败：' + a.html);
+  if (!ONLINE) throw new Error('回灌需要本机服务：先双击 start-editor.bat');
+  const j = await getJson('api/page?file=' + encodeURIComponent(a.html), { method:'POST', body: pageHtml(parsePage(DOCS[a.id]), a.id) });
+  if (!j || !j.ok) throw new Error('回灌失败：' + a.html);
 }
 
 $('#md').addEventListener('input', () => {
@@ -245,35 +281,42 @@ $('#md').addEventListener('input', () => {
 $('#artSel').addEventListener('change', () => { show($('#artSel').value); });
 
 $('#btnSave').addEventListener('click', async () => {
-  const b = $('#btnSave'); b.disabled = true; say('保存中…');
-  try { const a = ARTICLES.find(x => x.id === CUR); await saveOne(a); say('已保存：' + a.md, 'ok'); }
-  catch (e) { say(e.message, 'err'); }
+  const b = $('#btnSave'); b.disabled = true; say('处理中…');
+  try {
+    const a = ARTICLES.find(x => x.id === CUR);
+    await saveOne(a);
+    say(ONLINE ? ('已保存：' + a.md)
+               : ('没有本机服务（线上只读）：已导出这一页的 md —— ' + a.md.split('/').pop() + '。发回产品侧回灌即可。'), 'ok');
+  } catch (e) { say(e.message, 'err'); }
   b.disabled = false;
 });
 
 $('#btnSaveAll').addEventListener('click', async () => {
-  const b = $('#btnSaveAll'); b.disabled = true; say('保存全部…');
+  const b = $('#btnSaveAll'); b.disabled = true;
+  if (!ONLINE) {
+    say('「保存全部」需要本机服务：双击 start-editor.bat 后再打开本页；线上只能一页一页导出 md。', 'err');
+    b.disabled = false;
+    return;
+  }
+  say('保存全部…');
   try {
     for (const a of ARTICLES) await saveOne(a);
-    say('12 篇文案稿已保存。', 'ok');
+    say('全部文案稿已保存（' + ARTICLES.length + ' 篇）。', 'ok');
   } catch (e) { say(e.message, 'err'); }
   b.disabled = false;
 });
 
 $('#btnPub').addEventListener('click', async () => {
   const b = $('#btnPub');
-  if (OFFLINE) {
+  if (!ONLINE) {
     const a = ARTICLES.find(x => x.id === CUR);
     const name = a.md.split('/').pop();
-    const blob = new Blob([$('#md').value], { type:'text/markdown;charset=utf-8' });
-    const el = document.createElement('a');
-    el.href = URL.createObjectURL(blob); el.download = name;
-    document.body.appendChild(el); el.click();
-    setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
-    say('离线版：已导出 ' + name + '，请发回给产品侧回灌并发布到 GitHub。', 'ok');
+    downloadMd(name, $('#md').value);
+    say('没有本机服务（线上只读模式）：已导出这一页的 md —— ' + name + '\n' +
+        '发回产品侧回灌上线；要在本机直接保存并推送，请先双击 start-editor.bat，再用它给的地址打开本页。', 'ok');
     return;
   }
-  if (!confirm('定稿：保存 12 篇文案 → 回灌 12 个页面 → 提交并推送到 GitHub？')) return;
+  if (!confirm('定稿：保存全部文案 → 回灌全部页面 → 提交并推送到 GitHub？')) return;
   b.disabled = true;
   try {
     say('1/3 保存文案稿…');
@@ -284,9 +327,9 @@ $('#btnPub').addEventListener('click', async () => {
     for (const a of ARTICLES) { await regenOne(a); done.push(a.id); }
 
     say('3/3 提交到 GitHub…（已回灌 ' + done.join(' ') + '）');
-    const r = await fetch('api/publish', { method:'POST', body: JSON.stringify({ msg: $('#cmtMsg').value || '医学编辑定稿' }) });
-    const j = await r.json();
-    say(j.ok ? ('发布完成：\n' + (j.log || '')) : ('发布失败：\n' + (j.log || j.error || '')), j.ok ? 'ok' : 'err');
+    const j = await getJson('api/publish', { method:'POST', body: JSON.stringify({ msg: $('#cmtMsg').value || '医学编辑定稿' }) });
+    if (!j) { say('发布失败：本机服务没响应，确认 start-editor.bat 的窗口还在跑。', 'err'); }
+    else { say(j.ok ? ('发布完成：\n' + (j.log || '')) : ('发布失败：\n' + (j.log || j.error || '')), j.ok ? 'ok' : 'err'); }
   } catch (e) { say('发布失败：' + e.message, 'err'); }
   b.disabled = false;
 });
@@ -295,6 +338,9 @@ $('#btnPub').addEventListener('click', async () => {
   try {
     await loadHead();
     await loadMeta();
+    // 探测本机服务：有 → 能保存 / 回灌 / 发布；没有 → 只读，导出 md
+    const probe = await getJson('api/status');
+    ONLINE = !!(probe && probe.repo !== undefined);
     await loadDocs();
     await loadFigs();
     fillSelect();
@@ -302,10 +348,15 @@ $('#btnPub').addEventListener('click', async () => {
     const want = new URLSearchParams(location.search).get('id');
     const hit = want && ARTICLES.some(a => a.id === want) ? want : ARTICLES[0].id;
     show(hit);
-    if (OFFLINE) { say('离线版就绪：改完点「定稿并发布」导出本页 md，发回给产品侧回灌发布。'); return; }
-    const st = await fetch('api/status').then(r => r.json()).catch(() => null);
-    if (st) say('就绪 · 12 页一页一稿 · Git：' + (st.repo || '未初始化') + (st.branch ? ' · ' + st.branch : '') + (st.remote ? ' · ' + st.remote : ' · 未配置远端'));
-  } catch (e) { say('初始化失败：' + e.message + '（请用 start-editor.bat 打开，不要直接双击本文件）', 'err'); }
+    setMode();
+    if (!ONLINE) {
+      say('只读模式：没检测到本机服务。改完点「导出本页 md」，把文件发回产品侧回灌；\n' +
+          '要在本机直接保存 / 回灌 / 推送，请双击 start-editor.bat，再用它给出的地址打开本页。');
+      return;
+    }
+    say('就绪 · ' + ARTICLES.length + ' 页一页一稿 · Git：' + (probe.repo || '未初始化') +
+        (probe.branch ? ' · ' + probe.branch : '') + (probe.remote ? ' · ' + probe.remote : ' · 未配置远端'));
+  } catch (e) { say('初始化失败：' + e.message, 'err'); }
 })();
 </script>
 </body>
