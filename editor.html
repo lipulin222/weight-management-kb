@@ -45,14 +45,13 @@
   <h1>科普内容 · 编辑与预览</h1>
   <a class="back" href="index.html">← 内容索引</a>
   <span class="tag">一页一稿</span>
-  <span class="tag" id="modeTag"></span>
   <select id="artSel" title="选择要编辑/预览的页"></select>
   <span class="dot" id="dirtyDot" title="有未保存的改动"></span>
   <span class="spacer"></span>
-  <input type="text" id="cmtMsg" size="28" placeholder="发布说明（可留空）" value="医学编辑定稿">
-  <button id="btnSave">保存本页</button>
+  <input type="text" id="cmtMsg" size="24" placeholder="发布说明（可留空）" value="医学编辑定稿" hidden>
+  <button id="btnSave" class="primary">保存本页</button>
   <button id="btnSaveAll">保存全部</button>
-  <button id="btnPub" class="primary">定稿并发布到 GitHub</button>
+  <button id="btnPub" hidden>定稿并发布到 GitHub</button>
 </header>
 
 <main>
@@ -61,7 +60,7 @@
     <iframe id="pvFrame" title="页面预览"></iframe>
   </section>
   <section class="pane pane--md">
-    <div class="pane__hd">文案稿（Markdown · 只改字，改完点「保存本页」或「定稿并发布」）</div>
+    <div class="pane__hd">文案稿（Markdown · 只改字，改完点右上角「保存本页」）</div>
     <textarea id="md" spellcheck="false"></textarea>
   </section>
 </main>
@@ -113,21 +112,81 @@ async function getJson(url, opt) {
 async function getText(url) {
   try { const r = await fetch(url); return r.ok ? await r.text() : null; } catch (e) { return null; }
 }
-/* 没有后端时：把这一页文案导出成 md，发回产品侧回灌 */
-function downloadMd(name, text) {
-  const blob = new Blob([text], { type: 'text/markdown;charset=utf-8' });
+/* 没有本机服务时：把这一页文案下载成 md，并顺手复制全文（直接粘贴就能发） */
+function saveBlob(blob, name) {
   const el = document.createElement('a');
   el.href = URL.createObjectURL(blob); el.download = name;
   document.body.appendChild(el); el.click();
   setTimeout(() => { URL.revokeObjectURL(el.href); el.remove(); }, 1000);
 }
+function downloadMd(name, text) {
+  saveBlob(new Blob([text], { type: 'text/markdown;charset=utf-8' }), name);
+}
+async function copyText(t) {
+  try { await navigator.clipboard.writeText(t); return true; } catch (e) { return false; }
+}
+
+/* 全部打包：浏览器自己打 zip（store 模式，不压缩），不需要任何服务 */
+const CRC_T = (() => {
+  const t = new Uint32Array(256);
+  for (let n = 0; n < 256; n++) { let c = n; for (let k = 0; k < 8; k++) { c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1); } t[n] = c >>> 0; }
+  return t;
+})();
+function crc32(u8) { let c = 0xFFFFFFFF; for (let i = 0; i < u8.length; i++) { c = CRC_T[(c ^ u8[i]) & 0xFF] ^ (c >>> 8); } return (c ^ 0xFFFFFFFF) >>> 0; }
+function makeZip(files) {
+  const enc = new TextEncoder(), d = new Date();
+  const tm = ((d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1)) & 0xFFFF;
+  const dt = (((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate()) & 0xFFFF;
+  const locals = [], centrals = [];
+  let off = 0;
+  for (const f of files) {
+    const nm = enc.encode(f.name), crc = crc32(f.u8), n = f.u8.length;
+    const lh = new Uint8Array(30 + nm.length), lv = new DataView(lh.buffer);
+    lv.setUint32(0, 0x04034b50, true); lv.setUint16(4, 20, true); lv.setUint16(6, 0x0800, true); lv.setUint16(8, 0, true);
+    lv.setUint16(10, tm, true); lv.setUint16(12, dt, true);
+    lv.setUint32(14, crc, true); lv.setUint32(18, n, true); lv.setUint32(22, n, true);
+    lv.setUint16(26, nm.length, true); lv.setUint16(28, 0, true);
+    lh.set(nm, 30);
+    locals.push(lh, f.u8);
+    const ch = new Uint8Array(46 + nm.length), cv = new DataView(ch.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(8, 0x0800, true); cv.setUint16(10, 0, true);
+    cv.setUint16(12, tm, true); cv.setUint16(14, dt, true);
+    cv.setUint32(16, crc, true); cv.setUint32(20, n, true); cv.setUint32(24, n, true);
+    cv.setUint16(28, nm.length, true); cv.setUint16(30, 0, true); cv.setUint16(32, 0, true);
+    cv.setUint16(34, 0, true); cv.setUint16(36, 0, true); cv.setUint32(38, 0, true); cv.setUint32(42, off, true);
+    ch.set(nm, 46);
+    centrals.push(ch);
+    off += lh.length + n;
+  }
+  const cdSize = centrals.reduce((s, c) => s + c.length, 0);
+  const eo = new Uint8Array(22), ev = new DataView(eo.buffer);
+  ev.setUint32(0, 0x06054b50, true); ev.setUint16(4, 0, true); ev.setUint16(6, 0, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cdSize, true); ev.setUint32(16, off, true); ev.setUint16(20, 0, true);
+  return new Blob(locals.concat(centrals, [eo]), { type: 'application/zip' });
+}
+function zipName() {
+  const d = new Date(), p = (n) => String(n).padStart(2, '0');
+  return '文案稿-全部md-' + d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + '.zip';
+}
+function zipAll() {
+  const enc = new TextEncoder(), files = [];
+  for (const a of ARTICLES) {
+    if (!DOCS[a.id]) continue;
+    files.push({ name: a.md.split('/').pop(), u8: enc.encode(DOCS[a.id]) });
+  }
+  if (!files.length) throw new Error('没有可打包的稿子');
+  saveBlob(makeZip(files), zipName());
+  return files.length;
+}
+
 function setMode() {
-  $('#btnSave').textContent = ONLINE ? '保存本页' : '导出本页 md';
-  $('#btnSaveAll').textContent = '保存全部';
-  $('#btnPub').textContent = ONLINE ? '定稿并发布到 GitHub' : '导出本页 md（发回产品侧）';
-  $('#btnSaveAll').hidden = !ONLINE;
-  const t = $('#modeTag');
-  if (t) { t.textContent = ONLINE ? '本机可保存' : '只读 · 只能导出 md'; }
+  // 按钮永远存在、名字永远不变：有没有本机服务，编辑看到的都是「保存」
+  $('#btnSave').textContent = '保存本页';
+  $('#btnSaveAll').textContent = ONLINE ? '保存全部' : '保存全部（打包下载）';
+  $('#btnPub').hidden = !ONLINE;
+  $('#cmtMsg').hidden = !ONLINE;
 }
 
 /* ===================== 单页 md → 页面 HTML ===================== */
@@ -286,33 +345,35 @@ $('#btnSave').addEventListener('click', async () => {
   try {
     const a = ARTICLES.find(x => x.id === CUR);
     await saveOne(a);
-    if (ONLINE) say('保存成功', 'ok');
-    else say('已导出这一页的 md —— ' + a.md.split('/').pop() + '，把它发给产品侧即可。', 'ok');
-  } catch (e) { say('保存失败，请确认 start-editor.bat 的黑窗口还开着。', 'err'); }
+    if (ONLINE) { say('保存成功', 'ok'); }
+    else {
+      const name = a.md.split('/').pop();
+      const copied = await copyText(DOCS[a.id]);
+      say('保存成功：文件已存到「下载」目录（' + name + '）。\n' +
+          (copied ? '全文也已经复制好，直接在微信里粘贴发给我就行。' : '把这个文件发给我就行。'), 'ok');
+    }
+  } catch (e) { say(ONLINE ? '保存失败，请确认 start-editor.bat 的黑窗口还开着。' : '保存失败，再点一次试试；不行就把右边的文字复制出来发我。', 'err'); }
   b.disabled = false;
 });
 
 $('#btnSaveAll').addEventListener('click', async () => {
   const b = $('#btnSaveAll'); b.disabled = true;
-  if (!ONLINE) { say('当前是只读模式：请先双击 start-editor.bat 启动本机编辑器。', 'err'); b.disabled = false; return; }
   try {
-    say('保存全部…');
-    for (const a of ARTICLES) await saveOne(a);
-    say('保存成功', 'ok');
-  } catch (e) { say('保存失败，请确认 start-editor.bat 的黑窗口还开着。', 'err'); }
+    if (ONLINE) {
+      say('保存全部…');
+      for (const a of ARTICLES) await saveOne(a);
+      say('保存成功', 'ok');
+    } else {
+      const n = zipAll();
+      say('保存成功：' + n + ' 篇已打包成 zip（在「下载」目录），把这个压缩包发给我就行。', 'ok');
+    }
+  } catch (e) { say(ONLINE ? '保存失败，请确认 start-editor.bat 的黑窗口还开着。' : '打包失败，再点一次试试。', 'err'); }
   b.disabled = false;
 });
 
 $('#btnPub').addEventListener('click', async () => {
   const b = $('#btnPub');
-  if (!ONLINE) {
-    const a = ARTICLES.find(x => x.id === CUR);
-    const name = a.md.split('/').pop();
-    downloadMd(name, $('#md').value);
-    say('已导出这一页的 md —— ' + name + '\n把它发给产品侧回灌上线；\n' +
-        '要在本机直接保存并推送，请先双击 start-editor.bat，再用它给的地址打开本页。', 'ok');
-    return;
-  }
+  if (!ONLINE) return;
   if (!confirm('定稿：保存全部文案 → 回灌全部页面 → 提交并推送到 GitHub？')) return;
   b.disabled = true;
   try {
@@ -345,8 +406,8 @@ $('#btnPub').addEventListener('click', async () => {
     show(hit);
     setMode();
     if (!ONLINE) {
-      say('只读模式：没检测到本机服务。改完点「导出本页 md」，把文件发给产品侧回灌；\n' +
-          '要在本机直接保存，请双击 start-editor.bat，再用它给出的地址打开本页。');
+      say('改完点右上角的「保存本页」：文件会自动存到「下载」目录，全文也复制好了，直接粘贴发给我就行。\n' +
+          '一次改了很多篇，就点「保存全部（打包下载）」，发我一个压缩包。');
       return;
     }
     say('就绪 · 共 ' + ARTICLES.length + ' 篇 · 改完点「保存本页」就行');
